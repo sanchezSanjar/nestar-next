@@ -1,5 +1,5 @@
 {
-	"compilerOptions": {
+	"compilerOptions": { // @ts-ignore
 		"target": "es5",
 		"lib": ["dom", "dom.iterable", "esnext"],
 		"allowJs": true,
@@ -9,7 +9,7 @@
 		// "suppressImplicitAnyIndexErrors": true,
 		"noEmit": true,
 		"esModuleInterop": true,
-		"module": "esnext",
+		"module": "esnext", // @ts-ignore
 		"moduleResolution": "node",
 		"resolveJsonModule": true,
 		"isolatedModules": true,

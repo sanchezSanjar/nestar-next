@@ -20,6 +20,7 @@ export const getStaticProps = async ({ locale }: any) => ({
 const Home: NextPage = () => {
 	const device = useDeviceDetect();
 
+	// componentDidMount + target object + Api service + axios + Redux + ComponentDidUpdate
 	if (device === 'mobile') {
 		return (
 			<Stack className={'home-page'}>

@@ -15,6 +15,7 @@ const App = ({ Component, pageProps }: AppProps) => {
 	const [theme, setTheme] = useState(createTheme(light));
 	const client = useApollo(pageProps.initialApolloState);
 
+	// Socket.io, Redux, Mui, Apolo Client ...
 	return (
 		<ApolloProvider client={client}>
 			<ThemeProvider theme={theme}>

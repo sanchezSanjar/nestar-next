@@ -185,3 +185,15 @@ const deleteUserInfo = () => {
 		memberBlocks: 0,
 	});
 };
+
+/* 
+Frontend > GraphQL API request > Backend
+
+1. Hooks > UseQuery/useMutation - 98%
+2. Client - 1 %
+3. Axios - 1 %
+
+REACT Cache :
+useMemo * <> UseState
+useCallback* <> handler
+*/

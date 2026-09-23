@@ -39,7 +39,10 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 	/** APOLLO REQUESTS **/
 	const [likeTargetProperty] = useMutation(LIKE_TARGET_PROPERTY);
 
-	const { loading: getPropertiesLoading, data: getPropertiesData, error: getPropertiesError, refetch: getPropertiesRefetch } = useQuery(GET_PROPERTIES, {
+	const { loading: getPropertiesLoading, 
+		data: getPropertiesData, 
+		error: getPropertiesError, 
+		refetch: getPropertiesRefetch } = useQuery(GET_PROPERTIES, {
 			fetchPolicy: "network-only",
 			variables: {input: searchFilter},
 			notifyOnNetworkStatusChange: true,

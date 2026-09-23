@@ -45,13 +45,6 @@ const Filter = (props: FilterType) => {
 
 	/** LIFECYCLES **/
 	useEffect(() => {
-		const queryParams = JSON.stringify({
-			...searchFilter,
-			search: {
-				...searchFilter.search,
-			},
-		});
-
 		if (searchFilter?.search?.locationList?.length == 0) {
 			delete searchFilter.search.locationList;
 			setShowMore(false);
@@ -130,7 +123,7 @@ const Filter = (props: FilterType) => {
 				...searchFilter.search,
 			}, 
 		})}`, { scroll: false }).then();
-		
+
 		}
 
 		if (searchFilter?.search?.locationList) setShowMore(true);

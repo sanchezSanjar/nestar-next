@@ -1,4 +1,4 @@
-import React, { ChangeEvent, MouseEvent, useEffect, useState } from 'react';
+import React, { ChangeEvent, MouseEvent, useCallback, useEffect, useState } from 'react';
 import { NextPage } from 'next';
 import useDeviceDetect from '../../libs/hooks/useDeviceDetect';
 import withLayoutBasic from '../../libs/components/layout/LayoutBasic';
@@ -89,29 +89,64 @@ const AgentList: NextPage = ({ initialInput, ...props }: any) => {
 		setAnchorEl(null);
 	};
 
-	const sortingHandler = (e: React.MouseEvent<HTMLLIElement>) => {
-		switch (e.currentTarget.id) {
-			case 'recent':
-				setSearchFilter({ ...searchFilter, sort: 'createdAt', direction: 'DESC' });
-				setFilterSortName('Recent');
-				break;
-			case 'old':
-				setSearchFilter({ ...searchFilter, sort: 'createdAt', direction: 'ASC' });
-				setFilterSortName('Oldest order');
-				break;
-			case 'likes':
-				setSearchFilter({ ...searchFilter, sort: 'memberLikes', direction: 'DESC' });
-				setFilterSortName('Likes');
-				break;
-			case 'views':
-				setSearchFilter({ ...searchFilter, sort: 'memberViews', direction: 'DESC' });
-				setFilterSortName('Views');
-				break;
-		}
-		setSortingOpen(false);
-		setAnchorEl2(null);
-	};
+	// const sortingHandler = (e: React.MouseEvent<HTMLLIElement>) => {
+	// 	switch (e.currentTarget.id) {
+	// 		case 'recent':
+	// 			setSearchFilter({ ...searchFilter, sort: 'createdAt', direction: 'DESC' });
+	// 			setFilterSortName('Recent');
+	// 			break;
+	// 		case 'old':
+	// 			setSearchFilter({ ...searchFilter, sort: 'createdAt', direction: 'ASC' });
+	// 			setFilterSortName('Oldest order');
+	// 			break;
+	// 		case 'likes':
+	// 			setSearchFilter({ ...searchFilter, sort: 'memberLikes', direction: 'DESC' });
+	// 			setFilterSortName('Likes');
+	// 			break;
+	// 		case 'views':
+	// 			setSearchFilter({ ...searchFilter, sort: 'memberViews', direction: 'DESC' });
+	// 			setFilterSortName('Views');
+	// 			break;
+	// 	}
+	// 	setSortingOpen(false);
+	// 	setAnchorEl2(null);
+	// };
 
+	const sortingHandler = useCallback(
+		async (e: React.MouseEvent<HTMLLIElement>) => {
+			let updatedFilter;
+
+			switch (e.currentTarget.id) {
+				case 'recent':
+					updatedFilter = { ...searchFilter, sort: 'createdAt', direction: 'DESC' };
+					setFilterSortName('Recent');
+					break;
+				case 'old':
+					updatedFilter = { ...searchFilter, sort: 'createdAt', direction: 'ASC' };
+					setFilterSortName('Oldest');
+					break;
+				case 'likes':
+					updatedFilter = { ...searchFilter, sort: 'memberLikes', direction: 'DESC' };
+					setFilterSortName('Likes');
+					break;
+				case 'views':
+					updatedFilter = { ...searchFilter, sort: 'memberViews', direction: 'DESC' };
+					setFilterSortName('Views');
+					break;
+			}
+
+			await router.push(
+				`/agent?input=${JSON.stringify(updatedFilter)}`,
+				`/agent?input=${JSON.stringify(updatedFilter)}`,
+				{ scroll: false }
+			);
+
+			setSortingOpen(false);
+			setAnchorEl2(null);
+		},
+		[searchFilter, router]
+	);
+	
 	const paginationChangeHandler = async (event: ChangeEvent<unknown>, value: number) => {
 		searchFilter.page = value;
 		await router.push(`/agent?input=${JSON.stringify(searchFilter)}`, `/agent?input=${JSON.stringify(searchFilter)}`, {

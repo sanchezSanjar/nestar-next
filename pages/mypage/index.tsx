@@ -15,10 +15,10 @@ import { userVar } from '../../apollo/store';
 import MyMenu from '../../libs/components/mypage/MyMenu';
 import WriteArticle from '../../libs/components/mypage/WriteArticle';
 import MemberFollowers from '../../libs/components/member/MemberFollowers';
-import { sweetErrorHandling, sweetTopSmallSuccessAlert } from '../../libs/sweetAlert';
+import { sweetErrorHandling, sweetMixinErrorAlert, sweetTopSmallSuccessAlert } from '../../libs/sweetAlert';
 import MemberFollowings from '../../libs/components/member/MemberFollowings';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { SUBSCRIBE, UNSUBSCRIBE } from '../../apollo/user/mutation';
+import { LIKE_TARGET_MEMBER, SUBSCRIBE, UNSUBSCRIBE } from '../../apollo/user/mutation';
 import { Messages } from '../../libs/config';
 import { getJwtToken } from '../../libs/auth';
 
@@ -37,6 +37,7 @@ const MyPage: NextPage = () => {
 	/** APOLLO REQUESTS **/
 	const [subscribe] = useMutation(SUBSCRIBE);
 	const [unsubscribe] = useMutation(UNSUBSCRIBE);
+	const [likeTargetMember] = useMutation(LIKE_TARGET_MEMBER);
 
 	/** LIFECYCLES **/
 	useEffect(() => {
@@ -48,12 +49,18 @@ const MyPage: NextPage = () => {
 	const subscribeHandler = async (id: string, refetch: any, query: any) => {
 		try {
 			if (!id) throw new Error(Messages.error1);
-			if (!user?._id) throw new Error(Messages.error2);
+			if (!user._id) throw new Error(Messages.error2);
 
-			// refetch the profile card too, so its follower/following counts stay current
-			await subscribe({ variables: { input: id }, refetchQueries: ['GetMember'] });
-			await sweetTopSmallSuccessAlert('Followed!', 800);
-			if (refetch) await refetch({ input: query });
+			await subscribe({
+				variables: {
+					input: id,
+				},
+				// also refresh the profile card and follow lists that weren't the one clicked
+				refetchQueries: ['GetMember', 'GetMemberFollowers', 'GetMemberFollowings'],
+			});
+
+			await sweetTopSmallSuccessAlert('Subscribed!', 800);
+			await refetch({ input: query });
 		} catch (err: any) {
 			sweetErrorHandling(err).then();
 		}
@@ -62,13 +69,39 @@ const MyPage: NextPage = () => {
 	const unsubscribeHandler = async (id: string, refetch: any, query: any) => {
 		try {
 			if (!id) throw new Error(Messages.error1);
-			if (!user?._id) throw new Error(Messages.error2);
+			if (!user._id) throw new Error(Messages.error2);
 
-			await unsubscribe({ variables: { input: id }, refetchQueries: ['GetMember'] });
-			await sweetTopSmallSuccessAlert('Unfollowed!', 800);
-			if (refetch) await refetch({ input: query });
+			await unsubscribe({
+				variables: {
+					input: id,
+				},
+				// also refresh the profile card and follow lists that weren't the one clicked
+				refetchQueries: ['GetMember', 'GetMemberFollowers', 'GetMemberFollowings'],
+			});
+
+			await sweetTopSmallSuccessAlert('Unsubscribed!', 800);
+			await refetch({ input: query });
 		} catch (err: any) {
 			sweetErrorHandling(err).then();
+		}
+	};
+
+	const likeMemberHandler = async (id: string, refetch: any, query: any) => {
+		try {
+			if (!id) return;
+			if (!user._id) throw new Error(Messages.error2);
+
+			await likeTargetMember({
+				variables: {
+					input: id,
+				},
+			});
+
+			await sweetTopSmallSuccessAlert('Success!', 800);
+			await refetch({ input: query });
+		} catch (err: any) {
+			console.log('ERROR', 'likeMemberHandler:', err.message);
+			sweetMixinErrorAlert(err.message).then();
 		}
 	};
 
@@ -105,6 +138,7 @@ const MyPage: NextPage = () => {
 										<MemberFollowers
 											subscribeHandler={subscribeHandler}
 											unsubscribeHandler={unsubscribeHandler}
+											likeMemberHandler={likeMemberHandler}
 											redirectToMemberPageHandler={redirectToMemberPageHandler}
 										/>
 									)}
@@ -112,6 +146,7 @@ const MyPage: NextPage = () => {
 										<MemberFollowings
 											subscribeHandler={subscribeHandler}
 											unsubscribeHandler={unsubscribeHandler}
+											likeMemberHandler={likeMemberHandler}
 											redirectToMemberPageHandler={redirectToMemberPageHandler}
 										/>
 									)}

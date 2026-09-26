@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'next-i18next';
 import { Stack, Box, Divider, Typography } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
@@ -16,6 +17,7 @@ interface PopularPropertyCardProps {
 const PopularPropertyCard = (props: PopularPropertyCardProps) => {
 	const { property } = props;
 	const device = useDeviceDetect();
+	const { t } = useTranslation('common');
 	const router = useRouter();
 	const user = useReactiveVar(userVar);
 
@@ -37,7 +39,7 @@ const PopularPropertyCard = (props: PopularPropertyCardProps) => {
 					{property && property?.propertyRank >= topPropertyRank ? (
 						<div className={'status'}>
 							<img src="/img/icons/electricity.svg" alt="" />
-							<span>top</span>
+							<span>{t('top')}</span>
 						</div>
 					) : (
 						''
@@ -54,20 +56,20 @@ const PopularPropertyCard = (props: PopularPropertyCardProps) => {
 					<div className={'options'}>
 						<div>
 							<img src="/img/icons/bed.svg" alt="" />
-							<span>{property?.propertyBeds} bed</span>
+							<span>{t('{{count}} bed', { count: property?.propertyBeds })}</span>
 						</div>
 						<div>
 							<img src="/img/icons/room.svg" alt="" />
-							<span>{property?.propertyRooms} rooms</span>
+							<span>{t('{{count}} rooms', { count: property?.propertyRooms })}</span>
 						</div>
 						<div>
 							<img src="/img/icons/expand.svg" alt="" />
-							<span>{property?.propertySquare} m2</span>
+							<span>{t('{{count}} m2', { count: property?.propertySquare })}</span>
 						</div>
 					</div>
 					<Divider sx={{ mt: '15px', mb: '17px' }} />
 					<div className={'bott'}>
-						<p>{property?.propertyRent ? 'rent' : 'sale'}</p>
+						<p>{property?.propertyRent ? t('rent') : t('sale')}</p>
 						<div className="view-like-box">
 							<IconButton color={'default'}>
 								<RemoveRedEyeIcon />
@@ -90,7 +92,7 @@ const PopularPropertyCard = (props: PopularPropertyCardProps) => {
 					{property && property?.propertyRank >= topPropertyRank ? (
 						<div className={'status'}>
 							<img src="/img/icons/electricity.svg" alt="" />
-							<span>top</span>
+							<span>{t('top')}</span>
 						</div>
 					) : (
 						''
@@ -106,20 +108,20 @@ const PopularPropertyCard = (props: PopularPropertyCardProps) => {
 					<div className={'options'}>
 						<div>
 							<img src="/img/icons/bed.svg" alt="" />
-							<span>{property?.propertyBeds} bed</span>
+							<span>{t('{{count}} bed', { count: property?.propertyBeds })}</span>
 						</div>
 						<div>
 							<img src="/img/icons/room.svg" alt="" />
-							<span>{property?.propertyRooms} rooms</span>
+							<span>{t('{{count}} rooms', { count: property?.propertyRooms })}</span>
 						</div>
 						<div>
 							<img src="/img/icons/expand.svg" alt="" />
-							<span>{property?.propertySquare} m2</span>
+							<span>{t('{{count}} m2', { count: property?.propertySquare })}</span>
 						</div>
 					</div>
 					<Divider sx={{ mt: '15px', mb: '17px' }} />
 					<div className={'bott'}>
-						<p>{property?.propertyRent ? 'rent' : 'sale'}</p>
+						<p>{property?.propertyRent ? t('rent') : t('sale')}</p>
 						<div className="view-like-box">
 							<IconButton color={'default'}>
 								<RemoveRedEyeIcon />

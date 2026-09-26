@@ -1,4 +1,5 @@
 import React, { useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'next-i18next';
 import { Box, Button, FormControl, MenuItem, Stack, Typography, Select, TextField } from '@mui/material';
 import { BoardArticleCategory } from '../../enums/board-article.enum';
 import { Editor } from '@toast-ui/react-editor';
@@ -14,6 +15,7 @@ import { Message } from '../../enums/common.enum';
 import { sweetErrorHandling, sweetTopSuccessAlert } from '../../sweetAlert';
 
 const TuiEditor = () => {
+	const { t } = useTranslation('common');
 	const editorRef = useRef<Editor>(null),
 		token = getJwtToken(),
 		router = useRouter();
@@ -77,7 +79,6 @@ const TuiEditor = () => {
 	};
 
 	const articleTitleHandler = (e: T) => {
-		console.log(e.target.value);
 		memoizedValues.articleTitle = e.target.value;
 	};
 
@@ -87,7 +88,9 @@ const TuiEditor = () => {
 		  const articleContent = editor?.getInstance().getHTML() as string;
 		  memoizedValues.articleContent = articleContent;
 	  
-		  if (memoizedValues.articleContent === '' && memoizedValues.articleTitle === '') {
+		  // an empty editor still returns markup such as <p><br></p>, so check its plain text
+		  const contentText = editor?.getInstance().getMarkdown()?.trim() ?? '';
+		  if (memoizedValues.articleTitle.trim() === '' || contentText === '') {
 			throw new Error(Message.INSERT_ALL_INPUTS);
 		  }
 	  
@@ -106,7 +109,8 @@ const TuiEditor = () => {
 		  });
 		} catch (err: any) {
 		  console.log(err);
-		  sweetErrorHandling(new Error(Message.INSERT_ALL_INPUTS)).then();
+		  // show the real reason (e.g. the API's length validation) instead of always "insert all inputs"
+		  sweetErrorHandling(err).then();
 		}
 	  };
 
@@ -122,7 +126,7 @@ const TuiEditor = () => {
 			<Stack direction="row" style={{ margin: '40px' }} justifyContent="space-evenly">
 				<Box component={'div'} className={'form_row'} style={{ width: '300px' }}>
 					<Typography style={{ color: '#7f838d', margin: '10px' }} variant="h3">
-						Category
+						{t('Category')}
 					</Typography>
 					<FormControl sx={{ width: '100%', background: 'white' }}>
 						<Select
@@ -132,30 +136,31 @@ const TuiEditor = () => {
 							inputProps={{ 'aria-label': 'Without label' }}
 						>
 							<MenuItem value={BoardArticleCategory.FREE}>
-								<span>Free</span>
+								<span>{t('Free')}</span>
 							</MenuItem>
-							<MenuItem value={BoardArticleCategory.HUMOR}>Humor</MenuItem>
-							<MenuItem value={BoardArticleCategory.NEWS}>News</MenuItem>
-							<MenuItem value={BoardArticleCategory.RECOMMEND}>Recommendation</MenuItem>
+							<MenuItem value={BoardArticleCategory.HUMOR}>{t('Humor')}</MenuItem>
+							<MenuItem value={BoardArticleCategory.NEWS}>{t('News')}</MenuItem>
+							<MenuItem value={BoardArticleCategory.RECOMMEND}>{t('Recommendation')}</MenuItem>
 						</Select>
 					</FormControl>
 				</Box>
 				<Box component={'div'} style={{ width: '300px', flexDirection: 'column' }}>
 					<Typography style={{ color: '#7f838d', margin: '10px' }} variant="h3">
-						Title
+						{t('Title')}
 					</Typography>
 					<TextField
 						onChange={articleTitleHandler}
 						id="filled-basic"
-						label="Type Title"
+						label={t('Type Title')}
 						style={{ width: '300px', background: 'white' }}
 					/>
 				</Box>
 			</Stack>
 
 			<Editor
-				initialValue={'Type here'}
-				placeholder={'Type here'}
+				// not '' : an empty initialValue makes Toast UI read the surrounding markup as content
+				initialValue={' '}
+				placeholder={t('Type here')}
 				previewStyle={'vertical'}
 				height={'640px'}
 				// @ts-ignore
@@ -185,7 +190,7 @@ const TuiEditor = () => {
 					style={{ margin: '30px', width: '250px', height: '45px' }}
 					onClick={handleRegisterButton}
 				>
-					Register
+					{t('Publish article')}
 				</Button>
 			</Stack>
 		</Stack>

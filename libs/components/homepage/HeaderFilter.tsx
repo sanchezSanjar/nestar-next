@@ -328,16 +328,16 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 				<Stack className={'search-box'}>
 					<Stack className={'select-box'}>
 						<Box component={'div'} className={`box ${openLocation ? 'on' : ''}`} onClick={locationStateChangeHandler}>
-							<span>{searchFilter?.search?.locationList ? searchFilter?.search?.locationList[0] : t('Location')} </span>
+							<span>{searchFilter?.search?.locationList ? t(searchFilter?.search?.locationList[0]) : t('Location')} </span>
 							<ExpandMoreIcon />
 						</Box>
 						<Box className={`box ${openType ? 'on' : ''}`} onClick={typeStateChangeHandler}>
-							<span> {searchFilter?.search?.typeList ? searchFilter?.search?.typeList[0] : t('Property type')} </span>
+							<span> {searchFilter?.search?.typeList ? t(searchFilter?.search?.typeList[0]) : t('Property type')} </span>
 							<ExpandMoreIcon />
 						</Box>
 						<Box className={`box ${openRooms ? 'on' : ''}`} onClick={roomStateChangeHandler}>
 							<span>
-								{searchFilter?.search?.roomsList ? `${searchFilter?.search?.roomsList[0]} rooms}` : t('Rooms')}
+								{searchFilter?.search?.roomsList ? t('{{count}} rooms', { count: Number(searchFilter?.search?.roomsList[0]) }) : t('Rooms')}
 							</span>
 							<ExpandMoreIcon />
 						</Box>
@@ -358,7 +358,7 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 							return (
 								<div onClick={() => propertyLocationSelectHandler(location)} key={location}>
 									<img src={`img/banner/cities/${location}.webp`} alt="" />
-									<span>{location}</span>
+									<span>{t(location)}</span>
 								</div>
 							);
 						})}
@@ -372,7 +372,7 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 									onClick={() => propertyTypeSelectHandler(type)}
 									key={type}
 								>
-									<span>{type}</span>
+									<span>{t(type)}</span>
 								</div>
 							);
 						})}
@@ -382,7 +382,7 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 						{[1, 2, 3, 4, 5].map((room: number) => {
 							return (
 								<span onClick={() => propertyRoomSelectHandler(room)} key={room}>
-									{room} room{room > 1 ? 's' : ''}
+									{t('{{count}} rooms', { count: room })}
 								</span>
 							);
 						})}
@@ -403,13 +403,13 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 								<CloseIcon />
 							</div>
 							<div className={'top'}>
-								<span>Find your home</span>
+								<span>{t('Find your home')}</span>
 								<div className={'search-input-box'}>
 									<img src="/img/icons/search.svg" alt="" />
 									<input
 										value={searchFilter?.search?.text ?? ''}
 										type="text"
-										placeholder={'What are you looking for?'}
+										placeholder={t('What are you looking for?')}
 										onChange={(e: any) => {
 											setSearchFilter({
 												...searchFilter,
@@ -423,13 +423,13 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 							<div className={'middle'}>
 								<div className={'row-box'}>
 									<div className={'box'}>
-										<span>bedrooms</span>
+										<span>{t('bedrooms')}</span>
 										<div className={'inside'}>
 											<div
 												className={`room ${!searchFilter?.search?.bedsList ? 'active' : ''}`}
 												onClick={() => propertyBedSelectHandler(0)}
 											>
-												Any
+												{t('Any')}
 											</div>
 											{[1, 2, 3, 4, 5].map((bed: number) => (
 												<div
@@ -443,7 +443,7 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 										</div>
 									</div>
 									<div className={'box'}>
-										<span>options</span>
+										<span>{t('options')}</span>
 										<div className={'inside'}>
 											<FormControl>
 												<Select
@@ -452,9 +452,9 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 													displayEmpty
 													inputProps={{ 'aria-label': 'Without label' }}
 												>
-													<MenuItem value={'all'}>All Options</MenuItem>
-													<MenuItem value={'propertyBarter'}>Barter</MenuItem>
-													<MenuItem value={'propertyRent'}>Rent</MenuItem>
+													<MenuItem value={'all'}>{t('All Options')}</MenuItem>
+													<MenuItem value={'propertyBarter'}>{t('Barter')}</MenuItem>
+													<MenuItem value={'propertyRent'}>{t('Rent')}</MenuItem>
 												</Select>
 											</FormControl>
 										</div>
@@ -462,7 +462,7 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 								</div>
 								<div className={'row-box'} style={{ marginTop: '44px' }}>
 									<div className={'box'}>
-										<span>Year Built</span>
+										<span>{t('Year Built')}</span>
 										<div className={'inside space-between align-center'}>
 											<FormControl sx={{ width: '122px' }}>
 												<Select
@@ -501,7 +501,7 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 										</div>
 									</div>
 									<div className={'box'}>
-										<span>square meter</span>
+										<span>{t('square meter')}</span>
 										<div className={'inside space-between align-center'}>
 											<FormControl sx={{ width: '122px' }}>
 												<Select
@@ -550,14 +550,14 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 							<div className={'bottom'}>
 								<div onClick={resetFilterHandler}>
 									<img src="/img/icons/reset.svg" alt="" />
-									<span>Reset all filters</span>
+									<span>{t('Reset all filters')}</span>
 								</div>
 								<Button
 									startIcon={<img src={'/img/icons/search.svg'} />}
 									className={'search-btn'}
 									onClick={pushSearchHandler}
 								>
-									Search
+									{t('Search')}
 								</Button>
 							</div>
 						</Box>

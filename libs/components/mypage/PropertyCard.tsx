@@ -1,4 +1,5 @@
 import { Menu, MenuItem, Stack, Typography } from '@mui/material';
+import { useTranslation } from 'next-i18next';
 import React, { useState } from 'react';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
 import IconButton from '@mui/material/IconButton';
@@ -20,6 +21,7 @@ interface PropertyCardProps {
 export const PropertyCard = (props: PropertyCardProps) => {
 	const { property, deletePropertyHandler, memberPage, updatePropertyHandler } = props;
 	const device = useDeviceDetect();
+	const { t } = useTranslation('common');
 	const router = useRouter();
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 	const open = Boolean(anchorEl);
@@ -73,7 +75,7 @@ export const PropertyCard = (props: PropertyCardProps) => {
 				<Stack className="status-box">
 					<Stack className="coloured-box" sx={{ background: '#E5F0FD' }} onClick={handleClick}>
 						<Typography className="status" sx={{ color: '#3554d1' }}>
-							{property.propertyStatus}
+							{t(property.propertyStatus)}
 						</Typography>
 					</Stack>
 				</Stack>
@@ -107,7 +109,7 @@ export const PropertyCard = (props: PropertyCardProps) => {
 										updatePropertyHandler(PropertyStatus.SOLD, property?._id);
 									}}
 								>
-									Sold
+									{t('Sold')}
 								</MenuItem>
 							</>
 						)}

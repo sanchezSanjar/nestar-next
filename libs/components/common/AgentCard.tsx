@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'next-i18next';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
 import { Stack, Box, Typography } from '@mui/material';
 import Link from 'next/link';
@@ -18,6 +19,7 @@ interface AgentCardProps {
 const AgentCard = (props: AgentCardProps) => {
 	const { agent,likeMemberHandler } = props;
 	const device = useDeviceDetect();
+	const { t } = useTranslation('common');
 	const user = useReactiveVar(userVar);
 	const imagePath: string = agent?.memberImage
 		? `${REACT_APP_API_URL}/${agent?.memberImage}`
@@ -44,7 +46,7 @@ const AgentCard = (props: AgentCardProps) => {
 							backgroundRepeat: 'no-repeat',
 						}}
 					>
-						<div>{agent?.memberProperties} properties</div>
+						<div>{t('{{count}} properties', { count: agent?.memberProperties ?? 0 })}</div>
 					</Box>
 				</Link>
 
@@ -58,7 +60,7 @@ const AgentCard = (props: AgentCardProps) => {
 						>
 							<strong title={agent?.memberFullName ?? agent?.memberNick}>{agent?.memberFullName ?? agent?.memberNick}</strong>
 						</Link>
-						<span>Agent</span>
+						<span>{t('Agent')}</span>
 					</Box>
 					<Box component={'div'} className={'buttons'}>
 						<IconButton color={'default'}>

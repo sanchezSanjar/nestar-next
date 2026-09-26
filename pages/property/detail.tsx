@@ -1,4 +1,5 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
+import { useTranslation } from 'next-i18next';
 import { Box, Button, CircularProgress, Stack, Typography } from '@mui/material';
 import useDeviceDetect from '../../libs/hooks/useDeviceDetect';
 import withLayoutFull from '../../libs/components/layout/LayoutFull';
@@ -44,6 +45,7 @@ export const getStaticProps = async ({ locale }: any) => ({
 
 const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 	const device = useDeviceDetect();
+	const { t } = useTranslation('common');
 	const router = useRouter();
 	const user = useReactiveVar(userVar);
 	const [propertyId, setPropertyId] = useState<string | null>(null);
@@ -208,7 +210,7 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 								<Stack className={'left-box'}>
 									<Typography className={'title-main'}>{property?.propertyTitle}</Typography>
 									<Stack className={'top-box'}>
-										<Typography className={'city'}>{property?.propertyLocation}</Typography>
+										<Typography className={'city'}>{property?.propertyLocation && t(property.propertyLocation)}</Typography>
 										<Stack className={'divider'}></Stack>
 										<Stack className={'buy-rent-box'}>
 											{property?.propertyBarter && (
@@ -218,7 +220,7 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 															<circle cx="3" cy="3" r="3" fill="#EB6753" />
 														</svg>
 													</Stack>
-													<Typography className={'buy-rent'}>Barter</Typography>
+													<Typography className={'buy-rent'}>{t('Barter')}</Typography>
 												</>
 											)}
 
@@ -229,7 +231,7 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 															<circle cx="3" cy="3" r="3" fill="#EB6753" />
 														</svg>
 													</Stack>
-													<Typography className={'buy-rent'}>rent</Typography>
+													<Typography className={'buy-rent'}>{t('rent')}</Typography>
 												</>
 											)}
 										</Stack>
@@ -251,14 +253,14 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 												</clipPath>
 											</defs>
 										</svg>
-										<Typography className={'date'}>{moment().diff(property?.createdAt, 'days')} days ago</Typography>
+										<Typography className={'date'}>{t('{{count}} days ago', { count: moment().diff(property?.createdAt, 'days') })}</Typography>
 									</Stack>
 									<Stack className={'bottom-box'}>
 										<Stack className="option">
-											<img src="/img/icons/bed.svg" alt="" /> <Typography>{property?.propertyBeds} bed</Typography>
+											<img src="/img/icons/bed.svg" alt="" /> <Typography>{t('{{count}} bed', { count: property?.propertyBeds })}</Typography>
 										</Stack>
 										<Stack className="option">
-											<img src="/img/icons/room.svg" alt="" /> <Typography>{property?.propertyRooms} room</Typography>
+											<img src="/img/icons/room.svg" alt="" /> <Typography>{t('{{count}} rooms', { count: property?.propertyRooms })}</Typography>
 										</Stack>
 										<Stack className="option">
 											<img src="/img/icons/expand.svg" alt="" /> <Typography>{property?.propertySquare} m2</Typography>
@@ -323,7 +325,7 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 											</svg>
 										</Stack>
 										<Stack className={'option-includes'}>
-											<Typography className={'title'}>Bedroom</Typography>
+											<Typography className={'title'}>{t('Bedroom')}</Typography>
 											<Typography className={'option-data'}>{property?.propertyBeds}</Typography>
 										</Stack>
 									</Stack>
@@ -332,7 +334,7 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 											<img src={'/img/icons/room.svg'} />
 										</Stack>
 										<Stack className={'option-includes'}>
-											<Typography className={'title'}>Room</Typography>
+											<Typography className={'title'}>{t('Room')}</Typography>
 											<Typography className={'option-data'}>{property?.propertyRooms}</Typography>
 										</Stack>
 									</Stack>
@@ -350,7 +352,7 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 											</svg>
 										</Stack>
 										<Stack className={'option-includes'}>
-											<Typography className={'title'}>Year Build</Typography>
+											<Typography className={'title'}>{t('Year Build')}</Typography>
 											<Typography className={'option-data'}>{property?.constructedAt ? moment(property.constructedAt).format('YYYY') : '-'}</Typography>
 										</Stack>
 									</Stack>
@@ -378,7 +380,7 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 											</svg>
 										</Stack>
 										<Stack className={'option-includes'}>
-											<Typography className={'title'}>Size</Typography>
+											<Typography className={'title'}>{t('Size')}</Typography>
 											<Typography className={'option-data'}>{property?.propertySquare} m2</Typography>
 										</Stack>
 									</Stack>
@@ -393,50 +395,50 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 											</svg>
 										</Stack>
 										<Stack className={'option-includes'}>
-											<Typography className={'title'}>Property Type</Typography>
-											<Typography className={'option-data'}>{property?.propertyType}</Typography>
+											<Typography className={'title'}>{t('Property Type')}</Typography>
+											<Typography className={'option-data'}>{property?.propertyType && t(property.propertyType)}</Typography>
 										</Stack>
 									</Stack>
 								</Stack>
 								<Stack className={'prop-desc-config'}>
 									<Stack className={'top'}>
-										<Typography className={'title'}>Property Description</Typography>
+										<Typography className={'title'}>{t('Property Description')}</Typography>
 										<Typography className={'desc'}>{property?.propertyDesc ?? 'No Description!'}</Typography>
 									</Stack>
 									<Stack className={'bottom'}>
-										<Typography className={'title'}>Property Details</Typography>
+										<Typography className={'title'}>{t('Property Details')}</Typography>
 										<Stack className={'info-box'}>
 											<Stack className={'left'}>
 												<Box component={'div'} className={'info'}>
-													<Typography className={'title'}>Price</Typography>
+													<Typography className={'title'}>{t('Price')}</Typography>
 													<Typography className={'data'}>${formatterStr(property?.propertyPrice)}</Typography>
 												</Box>
 												<Box component={'div'} className={'info'}>
-													<Typography className={'title'}>Property Size</Typography>
+													<Typography className={'title'}>{t('Property Size')}</Typography>
 													<Typography className={'data'}>{property?.propertySquare} m2</Typography>
 												</Box>
 												<Box component={'div'} className={'info'}>
-													<Typography className={'title'}>Rooms</Typography>
+													<Typography className={'title'}>{t('Rooms')}</Typography>
 													<Typography className={'data'}>{property?.propertyRooms}</Typography>
 												</Box>
 												<Box component={'div'} className={'info'}>
-													<Typography className={'title'}>Bedrooms</Typography>
+													<Typography className={'title'}>{t('Bedrooms')}</Typography>
 													<Typography className={'data'}>{property?.propertyBeds}</Typography>
 												</Box>
 											</Stack>
 											<Stack className={'right'}>
 												<Box component={'div'} className={'info'}>
-													<Typography className={'title'}>Year Built</Typography>
+													<Typography className={'title'}>{t('Year Built')}</Typography>
 													<Typography className={'data'}>{property?.constructedAt ? moment(property.constructedAt).format('YYYY') : '-'}</Typography>
 												</Box>
 												<Box component={'div'} className={'info'}>
-													<Typography className={'title'}>Property Type</Typography>
-													<Typography className={'data'}>{property?.propertyType}</Typography>
+													<Typography className={'title'}>{t('Property Type')}</Typography>
+													<Typography className={'data'}>{property?.propertyType && t(property.propertyType)}</Typography>
 												</Box>
 												<Box component={'div'} className={'info'}>
-													<Typography className={'title'}>Property Options</Typography>
+													<Typography className={'title'}>{t('Property Options')}</Typography>
 													<Typography className={'data'}>
-														For {property?.propertyBarter && 'Barter'} {property?.propertyRent && 'Rent'}
+														{t('For')} {property?.propertyBarter && t('Barter')} {property?.propertyRent && t('Rent')}
 													</Typography>
 												</Box>
 											</Stack>
@@ -444,13 +446,13 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 									</Stack>
 								</Stack>
 								<Stack className={'floor-plans-config'}>
-									<Typography className={'title'}>Floor Plans</Typography>
+									<Typography className={'title'}>{t('Floor Plans')}</Typography>
 									<Stack className={'image-box'}>
 										<img src={'/img/property/floorPlan.png'} alt={'image'} />
 									</Stack>
 								</Stack>
 								<Stack className={'address-config'}>
-									<Typography className={'title'}>Address</Typography>
+									<Typography className={'title'}>{t('Address')}</Typography>
 									<Stack className={'map-box'}>
 										<iframe
 											src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d25867.098915951767!2d128.68632810247993!3d35.86402299180927!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x35660bba427bf179%3A0x1fc02da732b9072f!2sGeumhogangbyeon-ro%2C%20Dong-gu%2C%20Daegu!5e0!3m2!1suz!2skr!4v1695537640704!5m2!1suz!2skr"
@@ -480,7 +482,7 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 														</clipPath>
 													</defs>
 												</svg>
-												<Typography className={'reviews'}>{commentTotal} reviews</Typography>
+												<Typography className={'reviews'}>{t('{{count}} reviews', { count: commentTotal })}</Typography>
 											</Stack>
 										</Stack>
 										<Stack className={'review-list'}>
@@ -500,8 +502,8 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 									</Stack>
 								)}
 								<Stack className={'leave-review-config'}>
-									<Typography className={'main-title'}>Leave A Review</Typography>
-									<Typography className={'review-title'}>Review</Typography>
+									<Typography className={'main-title'}>{t('Leave A Review')}</Typography>
+									<Typography className={'review-title'}>{t('Review')}</Typography>
 									<textarea
 										onChange={({ target: { value } }: any) => {
 											setInsertCommentData({ ...insertCommentData, commentContent: value });
@@ -514,7 +516,7 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 											disabled={insertCommentData.commentContent === '' || user?._id === ''}
 											onClick={createCommentHandler}
 										>
-											<Typography className={'title'}>Submit Review</Typography>
+											<Typography className={'title'}>{t('Submit Review')}</Typography>
 											<svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 17 17" fill="none">
 												<g clipPath="url(#clip0_6975_3642)">
 													<path
@@ -534,7 +536,7 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 							</Stack>
 							<Stack className={'right-config'}>
 								<Stack className={'info-box'}>
-									<Typography className={'main-title'}>Get More Information</Typography>
+									<Typography className={'main-title'}>{t('Get More Information')}</Typography>
 									<Stack className={'image-info'}>
 										<img
 											className={'member-image'}
@@ -564,29 +566,29 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 												</svg>
 												<Typography className={'number'}>{property?.memberData?.memberPhone}</Typography>
 											</Stack>
-											<Typography className={'listings'}>View Listings</Typography>
+											<Typography className={'listings'}>{t('View Listings')}</Typography>
 										</Stack>
 									</Stack>
 								</Stack>
 								<Stack className={'info-box'}>
-									<Typography className={'sub-title'}>Name</Typography>
-									<input type={'text'} placeholder={'Enter your name'} />
+									<Typography className={'sub-title'}>{t('Name')}</Typography>
+									<input type={'text'} placeholder={t('Enter your name')} />
 								</Stack>
 								<Stack className={'info-box'}>
-									<Typography className={'sub-title'}>Phone</Typography>
-									<input type={'text'} placeholder={'Enter your phone'} />
+									<Typography className={'sub-title'}>{t('Phone')}</Typography>
+									<input type={'text'} placeholder={t('Enter your phone')} />
 								</Stack>
 								<Stack className={'info-box'}>
-									<Typography className={'sub-title'}>Email</Typography>
-									<input type={'text'} placeholder={'creativelayers088'} />
+									<Typography className={'sub-title'}>{t('Email')}</Typography>
+									<input type={'text'} placeholder={t('Enter your email')} />
 								</Stack>
 								<Stack className={'info-box'}>
-									<Typography className={'sub-title'}>Message</Typography>
-									<textarea placeholder={'Hello, I am interested in \n' + '[Renovated property at  floor]'}></textarea>
+									<Typography className={'sub-title'}>{t('Message')}</Typography>
+									<textarea placeholder={t('Hello, I am interested in this property')}></textarea>
 								</Stack>
 								<Stack className={'info-box'}>
 									<Button className={'send-message'}>
-										<Typography className={'title'}>Send Message</Typography>
+										<Typography className={'title'}>{t('Send Message')}</Typography>
 										<svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 17 17" fill="none">
 											<g clipPath="url(#clip0_6975_593)">
 												<path
@@ -608,7 +610,7 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 							<Stack className={'similar-properties-config'}>
 								<Stack className={'title-pagination-box'}>
 									<Stack className={'title-box'}>
-										<Typography className={'main-title'}>Destination Property</Typography>
+										<Typography className={'main-title'}>{t('Destination Property')}</Typography>
 										<Typography className={'sub-title'}>Aliquam lacinia diam quis lacus euismod</Typography>
 									</Stack>
 									<Stack className={'pagination-box'}>

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'next-i18next';
 import { NextPage } from 'next';
 import { Pagination, Stack, Typography } from '@mui/material';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
@@ -16,6 +17,7 @@ import { sweetConfirmAlert, sweetErrorHandling } from '../../sweetAlert';
 
 const MyProperties: NextPage = ({ initialInput, ...props }: any) => {
 	const device = useDeviceDetect();
+	const { t } = useTranslation('common');
 	const [searchFilter, setSearchFilter] = useState<AgentPropertiesInquiry>(initialInput);
 	const [agentProperties, setAgentProperties] = useState<Property[]>([]);
 	const [total, setTotal] = useState<number>(0);
@@ -35,8 +37,8 @@ const MyProperties: NextPage = ({ initialInput, ...props }: any) => {
 		variables: { input: searchFilter },
 		notifyOnNetworkStatusChange: true,
 		onCompleted: (data: T) => {
-			setAgentProperties(data?.getAgentProperties?.list);
-			setTotal(data?.getAgentProperties?.metaCounter[0]?.total ?? 0);
+			setAgentProperties(data?.getAgentProperties?.list ?? []);
+			setTotal(data?.getAgentProperties?.metaCounter?.[0]?.total ?? 0);
 		},
 	});
 
@@ -90,9 +92,11 @@ const MyProperties: NextPage = ({ initialInput, ...props }: any) => {
 		}
 	  };
 
-	if (user?.memberType !== 'AGENT') {
-		router.back();
-	}
+	/** LIFECYCLES **/
+	useEffect(() => {
+		// wait until the user is restored from the JWT; redirecting during render also ran on every re-render
+		if (user?._id && user.memberType !== 'AGENT') router.back();
+	}, [user?._id, user?.memberType]);
 
 	if (device === 'mobile') {
 		return <div>NESTAR PROPERTIES MOBILE</div>;
@@ -101,8 +105,8 @@ const MyProperties: NextPage = ({ initialInput, ...props }: any) => {
 			<div id="my-property-page">
 				<Stack className="main-title-box">
 					<Stack className="right-box">
-						<Typography className="main-title">My Properties</Typography>
-						<Typography className="sub-title">We are glad to see you again!</Typography>
+						<Typography className="main-title">{t('My Properties')}</Typography>
+						<Typography className="sub-title">{t('We are glad to see you again!')}</Typography>
 					</Stack>
 				</Stack>
 				<Stack className="property-list-box">
@@ -111,28 +115,28 @@ const MyProperties: NextPage = ({ initialInput, ...props }: any) => {
 							onClick={() => changeStatusHandler(PropertyStatus.ACTIVE)}
 							className={searchFilter.search.propertyStatus === 'ACTIVE' ? 'active-tab-name' : 'tab-name'}
 						>
-							On Sale
+							{t('On Sale')}
 						</Typography>
 						<Typography
 							onClick={() => changeStatusHandler(PropertyStatus.SOLD)}
 							className={searchFilter.search.propertyStatus === 'SOLD' ? 'active-tab-name' : 'tab-name'}
 						>
-							On Sold
+							{t('On Sold')}
 						</Typography>
 					</Stack>
 					<Stack className="list-box">
 						<Stack className="listing-title-box">
-							<Typography className="title-text">Listing title</Typography>
-							<Typography className="title-text">Date Published</Typography>
-							<Typography className="title-text">Status</Typography>
-							<Typography className="title-text">View</Typography>
-							{searchFilter.search.propertyStatus === 'ACTIVE' && <Typography className="title-text">Action</Typography>}
+							<Typography className="title-text">{t('Listing title')}</Typography>
+							<Typography className="title-text">{t('Date Published')}</Typography>
+							<Typography className="title-text">{t('Status')}</Typography>
+							<Typography className="title-text">{t('View')}</Typography>
+							{searchFilter.search.propertyStatus === 'ACTIVE' && <Typography className="title-text">{t('Action')}</Typography>}
 						</Stack>
 
 						{agentProperties?.length === 0 ? (
 							<div className={'no-data'}>
 								<img src="/img/icons/icoAlert.svg" alt="" />
-								<p>No Property found!</p>
+								<p>{t('No Property found!')}</p>
 							</div>
 						) : (
 							agentProperties.map((property: Property) => {
@@ -158,7 +162,7 @@ const MyProperties: NextPage = ({ initialInput, ...props }: any) => {
 									/>
 								</Stack>
 								<Stack className="total-result">
-									<Typography>{total} property available</Typography>
+									<Typography>{t('{{count}} property available', { count: total })}</Typography>
 								</Stack>
 							</Stack>
 						)}

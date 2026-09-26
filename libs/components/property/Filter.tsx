@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'next-i18next';
 import {
 	Stack,
 	Typography,
@@ -37,6 +38,7 @@ interface FilterType {
 const Filter = (props: FilterType) => {
 	const { searchFilter, setSearchFilter, initialInput } = props;
 	const device = useDeviceDetect();
+	const { t } = useTranslation('common');
 	const router = useRouter();
 	const [propertyLocation, setPropertyLocation] = useState<PropertyLocation[]>(Object.values(PropertyLocation));
 	const [propertyType, setPropertyType] = useState<PropertyType[]>(Object.values(PropertyType));
@@ -573,13 +575,13 @@ const Filter = (props: FilterType) => {
 		return (
 			<Stack className={'filter-main'}>
 				<Stack className={'find-your-home'} mb={'40px'}>
-					<Typography className={'title-main'}>Find Your Home</Typography>
+					<Typography className={'title-main'}>{t('Find Your Home')}</Typography>
 					<Stack className={'input-box'}>
 						<OutlinedInput
 							value={searchText}
 							type={'text'}
 							className={'search-input'}
-							placeholder={'What are you looking for?'}
+							placeholder={t('What are you looking for?')}
 							onChange={(e: any) => setSearchText(e.target.value)}
 							onKeyDown={(event: any) => {
 								if (event.key == 'Enter') {
@@ -605,7 +607,7 @@ const Filter = (props: FilterType) => {
 							}
 						/>
 						<img src={'/img/icons/search_icon.png'} alt={''} />
-						<Tooltip title="Reset">
+						<Tooltip title={t('Reset')}>
 							<IconButton onClick={refreshHandler}>
 								<RefreshIcon />
 							</IconButton>
@@ -614,7 +616,7 @@ const Filter = (props: FilterType) => {
 				</Stack>
 				<Stack className={'find-your-home'} mb={'30px'}>
 					<p className={'title'} style={{ textShadow: '0px 3px 4px #b9b9b9' }}>
-						Location
+						{t('Location')}
 					</p>
 					<Stack
 						className={`property-location`}
@@ -639,7 +641,7 @@ const Filter = (props: FilterType) => {
 										onChange={propertyLocationSelectHandler}
 									/>
 									<label htmlFor={location} style={{ cursor: 'pointer' }}>
-										<Typography className="property-type">{location}</Typography>
+										<Typography className="property-type">{t(location)}</Typography>
 									</label>
 								</Stack>
 							);
@@ -647,7 +649,7 @@ const Filter = (props: FilterType) => {
 					</Stack>
 				</Stack>
 				<Stack className={'find-your-home'} mb={'30px'}>
-					<Typography className={'title'}>Property Type</Typography>
+					<Typography className={'title'}>{t('Property Type')}</Typography>
 					{propertyType.map((type: string) => (
 						<Stack className={'input-box'} key={type}>
 							<Checkbox
@@ -660,13 +662,13 @@ const Filter = (props: FilterType) => {
 								checked={(searchFilter?.search?.typeList || []).includes(type as PropertyType)}
 							/>
 							<label style={{ cursor: 'pointer' }}>
-								<Typography className="property_type">{type}</Typography>
+								<Typography className="property_type">{t(type)}</Typography>
 							</label>
 						</Stack>
 					))}
 				</Stack>
 				<Stack className={'find-your-home'} mb={'30px'}>
-					<Typography className={'title'}>Rooms</Typography>
+					<Typography className={'title'}>{t('Rooms')}</Typography>
 					<Stack className="button-group">
 						<Button
 							sx={{
@@ -675,7 +677,7 @@ const Filter = (props: FilterType) => {
 							}}
 							onClick={() => propertyRoomSelectHandler(0)}
 						>
-							Any
+							{t('Any')}
 						</Button>
 						<Button
 							sx={{
@@ -730,7 +732,7 @@ const Filter = (props: FilterType) => {
 					</Stack>
 				</Stack>
 				<Stack className={'find-your-home'} mb={'30px'}>
-					<Typography className={'title'}>Bedrooms</Typography>
+					<Typography className={'title'}>{t('Bedrooms')}</Typography>
 					<Stack className="button-group">
 						<Button
 							sx={{
@@ -739,7 +741,7 @@ const Filter = (props: FilterType) => {
 							}}
 							onClick={() => propertyBedSelectHandler(0)}
 						>
-							Any
+							{t('Any')}
 						</Button>
 						<Button
 							sx={{
@@ -795,7 +797,7 @@ const Filter = (props: FilterType) => {
 					</Stack>
 				</Stack>
 				<Stack className={'find-your-home'} mb={'30px'}>
-					<Typography className={'title'}>Options</Typography>
+					<Typography className={'title'}>{t('Options')}</Typography>
 					<Stack className={'input-box'}>
 						<Checkbox
 							id={'Barter'}
@@ -807,7 +809,7 @@ const Filter = (props: FilterType) => {
 							onChange={propertyOptionSelectHandler}
 						/>
 						<label htmlFor={'Barter'} style={{ cursor: 'pointer' }}>
-							<Typography className="propert-type">Barter</Typography>
+							<Typography className="propert-type">{t('Barter')}</Typography>
 						</label>
 					</Stack>
 					<Stack className={'input-box'}>
@@ -821,20 +823,20 @@ const Filter = (props: FilterType) => {
 							onChange={propertyOptionSelectHandler}
 						/>
 						<label htmlFor={'Rent'} style={{ cursor: 'pointer' }}>
-							<Typography className="propert-type">Rent</Typography>
+							<Typography className="propert-type">{t('Rent')}</Typography>
 						</label>
 					</Stack>
 				</Stack>
 				<Stack className={'find-your-home'} mb={'30px'}>
-					<Typography className={'title'}>Square meter</Typography>
+					<Typography className={'title'}>{t('Square meter')}</Typography>
 					<Stack className="square-year-input">
 						<FormControl>
-							<InputLabel id="demo-simple-select-label">Min</InputLabel>
+							<InputLabel id="demo-simple-select-label">{t('Min')}</InputLabel>
 							<Select
 								labelId="demo-simple-select-label"
 								id="demo-simple-select"
 								value={searchFilter?.search?.squaresRange?.start ?? 0}
-								label="Min"
+								label={t('Min')}
 								onChange={(e: any) => propertySquareHandler(e, 'start')}
 								MenuProps={MenuProps}
 							>
@@ -851,12 +853,12 @@ const Filter = (props: FilterType) => {
 						</FormControl>
 						<div className="central-divider"></div>
 						<FormControl>
-							<InputLabel id="demo-simple-select-label">Max</InputLabel>
+							<InputLabel id="demo-simple-select-label">{t('Max')}</InputLabel>
 							<Select
 								labelId="demo-simple-select-label"
 								id="demo-simple-select"
 								value={searchFilter?.search?.squaresRange?.end ?? 500}
-								label="Max"
+								label={t('Max')}
 								onChange={(e: any) => propertySquareHandler(e, 'end')}
 								MenuProps={MenuProps}
 							>
@@ -874,11 +876,11 @@ const Filter = (props: FilterType) => {
 					</Stack>
 				</Stack>
 				<Stack className={'find-your-home'}>
-					<Typography className={'title'}>Price Range</Typography>
+					<Typography className={'title'}>{t('Price Range')}</Typography>
 					<Stack className="square-year-input">
 						<input
 							type="number"
-							placeholder="$ min"
+							placeholder={t('$ min')}
 							min={0}
 							value={priceInput.start}
 							onChange={(e: any) => {
@@ -890,7 +892,7 @@ const Filter = (props: FilterType) => {
 						<div className="central-divider"></div>
 						<input
 							type="number"
-							placeholder="$ max"
+							placeholder={t('$ max')}
 							value={priceInput.end}
 							onChange={(e: any) => {
 								if (e.target.value === '' || e.target.value >= 0) {

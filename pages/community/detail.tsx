@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'next-i18next';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import useDeviceDetect from '../../libs/hooks/useDeviceDetect';
@@ -36,6 +37,7 @@ export const getStaticProps = async ({ locale }: any) => ({
 
 const CommunityDetail: NextPage = ({ initialInput, ...props }: T) => {
 	const device = useDeviceDetect();
+	const { t } = useTranslation('common');
 	const router = useRouter();
 	const { query } = router;
 
@@ -256,7 +258,7 @@ const CommunityDetail: NextPage = ({ initialInput, ...props }: T) => {
 							<Stack className={'image-info'}>
 								<img src={'/img/logo/logoText.svg'} />
 								<Stack className={'community-name'}>
-									<Typography className={'name'}>Community Board Article</Typography>
+									<Typography className={'name'}>{t('Community Board Article')}</Typography>
 								</Stack>
 							</Stack>
 							<Tabs
@@ -270,22 +272,22 @@ const CommunityDetail: NextPage = ({ initialInput, ...props }: T) => {
 							>
 								<Tab
 									value={'FREE'}
-									label={'Free Board'}
+									label={t('Free Board')}
 									className={`tab-button ${articleCategory === 'FREE' ? 'active' : ''}`}
 								/>
 								<Tab
 									value={'RECOMMEND'}
-									label={'Recommendation'}
+									label={t('Recommendation')}
 									className={`tab-button ${articleCategory === 'RECOMMEND' ? 'active' : ''}`}
 								/>
 								<Tab
 									value={'NEWS'}
-									label={'News'}
+									label={t('News')}
 									className={`tab-button ${articleCategory === 'NEWS' ? 'active' : ''}`}
 								/>
 								<Tab
 									value={'HUMOR'}
-									label={'Humor'}
+									label={t('Humor')}
 									className={`tab-button ${articleCategory === 'HUMOR' ? 'active' : ''}`}
 								/>
 							</Tabs>
@@ -293,9 +295,9 @@ const CommunityDetail: NextPage = ({ initialInput, ...props }: T) => {
 						<div className="community-detail-config">
 							<Stack className="title-box">
 								<Stack className="left">
-									<Typography className="title">{articleCategory} BOARD</Typography>
+									<Typography className="title">{t('{{category}} BOARD', { category: t(articleCategory) })}</Typography>
 									<Typography className="sub-title">
-										Express your opinions freely here without content restrictions
+										{t('Express your opinions freely here without content restrictions')}
 									</Typography>
 								</Stack>
 								<Button
@@ -309,7 +311,7 @@ const CommunityDetail: NextPage = ({ initialInput, ...props }: T) => {
 									}
 									className="right"
 								>
-									Write
+									{t('Write')}
 								</Button>
 							</Stack>
 							<div className="config">
@@ -378,11 +380,11 @@ const CommunityDetail: NextPage = ({ initialInput, ...props }: T) => {
 									className="second-box-config"
 									sx={{ borderBottom: total > 0 ? 'none' : '1px solid #eee', border: '1px solid #eee' }}
 								>
-									<Typography className="title-text">Comments ({total})</Typography>
+									<Typography className="title-text">{t('Comments ({{count}})', { count: total })}</Typography>
 									<Stack className="leave-comment">
 										<input
 											type="text"
-											placeholder="Leave a comment"
+											placeholder={t('Leave a comment')}
 											value={comment}
 											onChange={(e) => {
 												if (e.target.value.length > 100) return;
@@ -392,13 +394,13 @@ const CommunityDetail: NextPage = ({ initialInput, ...props }: T) => {
 										/>
 										<Stack className="button-box">
 											<Typography>{wordsCnt}/100</Typography>
-											<Button onClick={createCommentHandler}>comment</Button>
+											<Button onClick={createCommentHandler}>{t('comment')}</Button>
 										</Stack>
 									</Stack>
 								</Stack>
 								{total > 0 && (
 									<Stack className="comments">
-										<Typography className="comments-title">Comments</Typography>
+										<Typography className="comments-title">{t('Comments')}</Typography>
 									</Stack>
 								)}
 								{comments?.map((commentData, index) => {
@@ -476,7 +478,7 @@ const CommunityDetail: NextPage = ({ initialInput, ...props }: T) => {
 										}}
 									>
 										<Typography variant="h4" color={'#b9b9b9'}>
-											Update comment
+											{t('Update comment')}
 										</Typography>
 										<Stack gap={'20px'}>
 											<input
@@ -502,14 +504,14 @@ const CommunityDetail: NextPage = ({ initialInput, ...props }: T) => {
 														color="inherit"
 														onClick={() => cancelButtonHandler()}
 													>
-														Cancel
+														{t('Cancel')}
 													</Button>
 													<Button
 														variant="contained"
 														color="inherit"
 														onClick={() => updateButtonHandler(updatedCommentId, undefined)}
 													>
-														Update
+														{t('Update')}
 													</Button>
 												</Stack>
 											</Stack>

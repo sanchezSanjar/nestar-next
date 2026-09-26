@@ -1,4 +1,5 @@
 import FacebookOutlinedIcon from '@mui/icons-material/FacebookOutlined';
+import { useTranslation } from 'next-i18next';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import TelegramIcon from '@mui/icons-material/Telegram';
 import TwitterIcon from '@mui/icons-material/Twitter';
@@ -8,6 +9,7 @@ import moment from 'moment';
 
 const Footer = () => {
 	const device = useDeviceDetect();
+	const { t } = useTranslation('common');
 
 	if (device == 'mobile') {
 		return (
@@ -18,16 +20,16 @@ const Footer = () => {
 							<img src="/img/logo/logoWhite.svg" alt="" className={'logo'} />
 						</Box>
 						<Box component={'div'} className={'footer-box'}>
-							<span>total free customer care</span>
+							<span>{t('total free customer care')}</span>
 							<p>+82 10 4867 2909</p>
 						</Box>
 						<Box component={'div'} className={'footer-box'}>
-							<span>nee live</span>
+							<span>{t('nee live')}</span>
 							<p>+82 10 4867 2909</p>
-							<span>Support?</span>
+							<span>{t('Support?')}</span>
 						</Box>
 						<Box component={'div'} className={'footer-box'}>
-							<p>follow us on social media</p>
+							<p>{t('follow us on social media')}</p>
 							<div className={'media-box'}>
 								<FacebookOutlinedIcon />
 								<TelegramIcon />
@@ -39,31 +41,31 @@ const Footer = () => {
 					<Stack className={'right'}>
 						<Box component={'div'} className={'bottom'}>
 							<div>
-								<strong>Popular Search</strong>
-								<span>Property for Rent</span>
-								<span>Property Low to hide</span>
+								<strong>{t('Popular Search')}</strong>
+								<span>{t('Property for Rent')}</span>
+								<span>{t('Property Low to hide')}</span>
 							</div>
 							<div>
-								<strong>Quick Links</strong>
-								<span>Terms of Use</span>
-								<span>Privacy Policy</span>
-								<span>Pricing Plans</span>
-								<span>Our Services</span>
-								<span>Contact Support</span>
-								<span>FAQs</span>
+								<strong>{t('Quick Links')}</strong>
+								<span>{t('Terms of Use')}</span>
+								<span>{t('Privacy Policy')}</span>
+								<span>{t('Pricing Plans')}</span>
+								<span>{t('Our Services')}</span>
+								<span>{t('Contact Support')}</span>
+								<span>{t('FAQs')}</span>
 							</div>
 							<div>
-								<strong>Discover</strong>
-								<span>Seoul</span>
-								<span>Gyeongido</span>
-								<span>Busan</span>
-								<span>Jejudo</span>
+								<strong>{t('Discover')}</strong>
+								<span>{t('Seoul')}</span>
+								<span>{t('Gyeongido')}</span>
+								<span>{t('Busan')}</span>
+								<span>{t('Jejudo')}</span>
 							</div>
 						</Box>
 					</Stack>
 				</Stack>
 				<Stack className={'second'}>
-					<span>© Nestar - All rights reserved. Nestar {moment().year()}</span>
+					<span>{t('© Nestar - All rights reserved. Nestar {{year}}', { year: moment().year() })}</span>
 				</Stack>
 			</Stack>
 		);
@@ -76,16 +78,16 @@ const Footer = () => {
 							<img src="/img/logo/logoWhite.svg" alt="" className={'logo'} />
 						</Box>
 						<Box component={'div'} className={'footer-box'}>
-							<span>total free customer care</span>
+							<span>{t('total free customer care')}</span>
 							<p>+82 10 4867 2909</p>
 						</Box>
 						<Box component={'div'} className={'footer-box'}>
-							<span>nee live</span>
+							<span>{t('nee live')}</span>
 							<p>+82 10 4867 2909</p>
-							<span>Support?</span>
+							<span>{t('Support?')}</span>
 						</Box>
 						<Box component={'div'} className={'footer-box'}>
-							<p>follow us on social media</p>
+							<p>{t('follow us on social media')}</p>
 							<div className={'media-box'}>
 								<FacebookOutlinedIcon />
 								<TelegramIcon />
@@ -96,40 +98,40 @@ const Footer = () => {
 					</Stack>
 					<Stack className={'right'}>
 						<Box component={'div'} className={'top'}>
-							<strong>keep yourself up to date</strong>
+							<strong>{t('keep yourself up to date')}</strong>
 							<div>
-								<input type="text" placeholder={'Your Email'} />
-								<span>Subscribe</span>
+								<input type="text" placeholder={t('Your Email')} />
+								<span>{t('Subscribe')}</span>
 							</div>
 						</Box>
 						<Box component={'div'} className={'bottom'}>
 							<div>
-								<strong>Popular Search</strong>
-								<span>Property for Rent</span>
-								<span>Property Low to hide</span>
+								<strong>{t('Popular Search')}</strong>
+								<span>{t('Property for Rent')}</span>
+								<span>{t('Property Low to hide')}</span>
 							</div>
 							<div>
-								<strong>Quick Links</strong>
-								<span>Terms of Use</span>
-								<span>Privacy Policy</span>
-								<span>Pricing Plans</span>
-								<span>Our Services</span>
-								<span>Contact Support</span>
-								<span>FAQs</span>
+								<strong>{t('Quick Links')}</strong>
+								<span>{t('Terms of Use')}</span>
+								<span>{t('Privacy Policy')}</span>
+								<span>{t('Pricing Plans')}</span>
+								<span>{t('Our Services')}</span>
+								<span>{t('Contact Support')}</span>
+								<span>{t('FAQs')}</span>
 							</div>
 							<div>
-								<strong>Discover</strong>
-								<span>Seoul</span>
-								<span>Gyeongido</span>
-								<span>Busan</span>
-								<span>Jejudo</span>
+								<strong>{t('Discover')}</strong>
+								<span>{t('Seoul')}</span>
+								<span>{t('Gyeongido')}</span>
+								<span>{t('Busan')}</span>
+								<span>{t('Jejudo')}</span>
 							</div>
 						</Box>
 					</Stack>
 				</Stack>
 				<Stack className={'second'}>
-					<span>© Nestar - All rights reserved. Nestar {moment().year()}</span>
-					<span>Privacy · Terms · Sitemap</span>
+					<span>{t('© Nestar - All rights reserved. Nestar {{year}}', { year: moment().year() })}</span>
+					<span>{t('Privacy · Terms · Sitemap')}</span>
 				</Stack>
 			</Stack>
 		);

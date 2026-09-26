@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'next-i18next';
 import { Stack, Box, Divider, Typography } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
@@ -19,6 +20,7 @@ interface PropertyBigCardProps {
 const PropertyBigCard = (props: PropertyBigCardProps) => {
 	const { property,likePropertyHandler } = props;
 	const device = useDeviceDetect();
+	const { t } = useTranslation('common');
 	const user = useReactiveVar(userVar);
 	const router = useRouter();
 
@@ -40,7 +42,7 @@ const PropertyBigCard = (props: PropertyBigCardProps) => {
 					{property && property?.propertyRank >= topPropertyRank && (
 						<div className={'status'}>
 							<img src="/img/icons/electricity.svg" alt="" />
-							<span>top</span>
+							<span>{t('top')}</span>
 						</div>
 					)}
 
@@ -52,22 +54,22 @@ const PropertyBigCard = (props: PropertyBigCardProps) => {
 					<div className={'options'}>
 						<div>
 							<img src="/img/icons/bed.svg" alt="" />
-							<span>{property?.propertyBeds} bed</span>
+							<span>{t('{{count}} bed', { count: property?.propertyBeds })}</span>
 						</div>
 						<div>
 							<img src="/img/icons/room.svg" alt="" />
-							<span>{property?.propertyRooms} rooms</span>
+							<span>{t('{{count}} rooms', { count: property?.propertyRooms })}</span>
 						</div>
 						<div>
 							<img src="/img/icons/expand.svg" alt="" />
-							<span>{property?.propertySquare} m2</span>
+							<span>{t('{{count}} m2', { count: property?.propertySquare })}</span>
 						</div>
 					</div>
 					<Divider sx={{ mt: '15px', mb: '17px' }} />
 					<div className={'bott'}>
 						<div>
-							{property?.propertyRent ? <p>Rent</p> : <span>Rent</span>}
-							{property?.propertyBarter ? <p>Barter</p> : <span>Barter</span>}
+							{property?.propertyRent ? <p>{t('Rent')}</p> : <span>{t('Rent')}</span>}
+							{property?.propertyBarter ? <p>{t('Barter')}</p> : <span>{t('Barter')}</span>}
 						</div>
 						<div className="buttons-box">
 							<IconButton color={'default'}>

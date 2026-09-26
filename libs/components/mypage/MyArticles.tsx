@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'next-i18next';
 import { NextPage } from 'next';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
 import { Pagination, Stack, Typography } from '@mui/material';
@@ -14,6 +15,7 @@ import { sweetMixinErrorAlert, sweetTopSmallSuccessAlert } from '../../sweetAler
 
 const MyArticles: NextPage = ({ initialInput, ...props }: T) => {
 	const device = useDeviceDetect();
+	const { t } = useTranslation('common');
 	const user = useReactiveVar(userVar);
 	const [searchCommunity, setSearchCommunity] = useState({
 		...initialInput,
@@ -35,12 +37,22 @@ const MyArticles: NextPage = ({ initialInput, ...props }: T) => {
 		variables: {
 			input: searchCommunity,
 		},
+		// an empty memberId means "no filter" on the API, which would list everyone's articles
+		skip: !searchCommunity.search.memberId,
 		notifyOnNetworkStatusChange: true,
 		onCompleted: (data: T) => {
-			setBoardArticles(data?.getBoardArticles?.list);
-			setTotalCount(data?.getBoardArticles?.metaCounter[0]?.total);
+			setBoardArticles(data?.getBoardArticles?.list ?? []);
+			setTotalCount(data?.getBoardArticles?.metaCounter?.[0]?.total ?? 0);
 		},
 	});
+
+	/** LIFECYCLES **/
+	useEffect(() => {
+		// the user is restored from the JWT after mount, so pick up the id once it's known
+		if (user?._id && user._id !== searchCommunity.search.memberId) {
+			setSearchCommunity({ ...searchCommunity, page: 1, search: { memberId: user._id } });
+		}
+	}, [user?._id]);
 
 	/** HANDLERS **/
 	const paginationHandler = (e: T, value: number) => {
@@ -76,8 +88,8 @@ const MyArticles: NextPage = ({ initialInput, ...props }: T) => {
 			<div id="my-articles-page">
 				<Stack className="main-title-box">
 					<Stack className="right-box">
-						<Typography className="main-title">Article</Typography>
-						<Typography className="sub-title">We are glad to see you again!</Typography>
+						<Typography className="main-title">{t('Article')}</Typography>
+						<Typography className="sub-title">{t('We are glad to see you again!')}</Typography>
 					</Stack>
 				</Stack>
 				<Stack className="article-list-box">
@@ -95,7 +107,7 @@ const MyArticles: NextPage = ({ initialInput, ...props }: T) => {
 					) : (
 						<div className={'no-data'}>
 							<img src="/img/icons/icoAlert.svg" alt="" />
-							<p>No Articles found!</p>
+							<p>{t('No Articles found!')}</p>
 						</div>
 					)}
 				</Stack>
@@ -112,7 +124,7 @@ const MyArticles: NextPage = ({ initialInput, ...props }: T) => {
 							/>
 						</Stack>
 						<Stack className="total">
-							<Typography>Total {totalCount ?? 0} article(s) available</Typography>
+							<Typography>{t('Total {{count}} articles available', { count: totalCount ?? 0 })}</Typography>
 						</Stack>
 					</Stack>
 				)}

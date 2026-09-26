@@ -1,4 +1,5 @@
 import React, { ChangeEvent, MouseEvent, useEffect, useState } from 'react';
+import { useTranslation } from 'next-i18next';
 import { NextPage } from 'next';
 import { Box, Button, Menu, MenuItem, Pagination, Stack, Typography } from '@mui/material';
 import PropertyCard from '../../libs/components/property/PropertyCard';
@@ -34,6 +35,7 @@ const parseInput = (input: unknown) => {
 
 const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 	const device = useDeviceDetect();
+	const { t } = useTranslation('common');
 	const router = useRouter();
 	const [searchFilter, setSearchFilter] = useState<PropertiesInquiry>(parseInput(router?.query?.input) ?? initialInput);
 	const [properties, setProperties] = useState<Property[]>([]);
@@ -136,10 +138,10 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 			<div id="property-list-page" style={{ position: 'relative' }}>
 				<div className="container">
 					<Box component={'div'} className={'right'}>
-						<span>Sort by</span>
+						<span>{t('Sort by')}</span>
 						<div>
 							<Button onClick={sortingClickHandler} endIcon={<KeyboardArrowDownRoundedIcon />}>
-								{filterSortName}
+								{t(filterSortName)}
 							</Button>
 							<Menu anchorEl={anchorEl} open={sortingOpen} onClose={sortingCloseHandler} sx={{ paddingTop: '5px' }}>
 								<MenuItem
@@ -148,7 +150,7 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 									disableRipple
 									sx={{ boxShadow: 'rgba(149, 157, 165, 0.2) 0px 8px 24px' }}
 								>
-									New
+									{t('New')}
 								</MenuItem>
 								<MenuItem
 									onClick={sortingHandler}
@@ -156,7 +158,7 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 									disableRipple
 									sx={{ boxShadow: 'rgba(149, 157, 165, 0.2) 0px 8px 24px' }}
 								>
-									Lowest Price
+									{t('Lowest Price')}
 								</MenuItem>
 								<MenuItem
 									onClick={sortingHandler}
@@ -164,7 +166,7 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 									disableRipple
 									sx={{ boxShadow: 'rgba(149, 157, 165, 0.2) 0px 8px 24px' }}
 								>
-									Highest Price
+									{t('Highest Price')}
 								</MenuItem>
 							</Menu>
 						</div>
@@ -179,7 +181,7 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 								{properties?.length === 0 ? (
 									<div className={'no-data'}>
 										<img src="/img/icons/icoAlert.svg" alt="" />
-										<p>No Properties found!</p>
+										<p>{t('No Properties found!')}</p>
 									</div>
 								) : (
 									properties.map((property: Property) => {
@@ -203,7 +205,7 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 								{properties.length !== 0 && (
 									<Stack className="total-result">
 										<Typography>
-											Total {total} propert{total > 1 ? 'ies' : 'y'} available
+											{t('Total {{count}} properties available', { count: total })}
 										</Typography>
 									</Stack>
 								)}

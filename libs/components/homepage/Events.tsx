@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'next-i18next';
 import { Stack, Box } from '@mui/material';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
 
@@ -39,6 +40,7 @@ const eventsData: EventData[] = [
 
 const EventCard = ({ event }: { event: EventData }) => {
 	const device = useDeviceDetect();
+	const { t } = useTranslation('common');
 
 	if (device === 'mobile') {
 		return <div>EVENT CARD</div>;
@@ -54,11 +56,11 @@ const EventCard = ({ event }: { event: EventData }) => {
 				}}
 			>
 				<Box component={'div'} className={'info'}>
-					<strong>{event?.city}</strong>
-					<span>{event?.eventTitle}</span>
+					<strong>{t(event?.city)}</strong>
+					<span>{t(event?.eventTitle)}</span>
 				</Box>
 				<Box component={'div'} className={'more'}>
-					<span>{event?.description}</span>
+					<span>{t(event?.description)}</span>
 				</Box>
 			</Stack>
 		);
@@ -67,6 +69,7 @@ const EventCard = ({ event }: { event: EventData }) => {
 
 const Events = () => {
 	const device = useDeviceDetect();
+	const { t } = useTranslation('common');
 
 	if (device === 'mobile') {
 		return <div>EVENT CARD</div>;
@@ -76,8 +79,8 @@ const Events = () => {
 				<Stack className={'container'}>
 					<Stack className={'info-box'}>
 						<Box component={'div'} className={'left'}>
-							<span className={'white'}>Events</span>
-							<p className={'white'}>Events waiting your attention!</p>
+							<span className={'white'}>{t('Events')}</span>
+							<p className={'white'}>{t('Events waiting your attention!')}</p>
 						</Box>
 					</Stack>
 					<Stack className={'card-wrapper'}>

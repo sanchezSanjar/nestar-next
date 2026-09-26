@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'next-i18next';
 import Link from 'next/link';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
 import { Box } from '@mui/material';
@@ -14,6 +15,7 @@ interface CommunityCardProps {
 const CommunityCard = (props: CommunityCardProps) => {
 	const { vertical, article, index } = props;
 	const device = useDeviceDetect();
+	const { t } = useTranslation('common');
 	const articleImage = article?.articleImage
 		? `${process.env.REACT_APP_API_URL}/${article?.articleImage}`
 		: '/img/event.svg';
@@ -29,7 +31,7 @@ const CommunityCard = (props: CommunityCardProps) => {
 							<div>{index + 1}</div>
 						</div>
 						<strong>{article?.articleTitle}</strong>
-						<span>Free Board</span>
+						<span>{t('Free Board')}</span>
 					</Box>
 				</Link>
 			);

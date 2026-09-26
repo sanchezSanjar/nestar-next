@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'next-i18next';
 import { Stack, Box } from '@mui/material';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -20,6 +21,7 @@ interface PopularPropertiesProps {
 const PopularProperties = (props: PopularPropertiesProps) => {
 	const { initialInput } = props;
 	const device = useDeviceDetect();
+	const { t } = useTranslation('common');
 	const [popularProperties, setPopularProperties] = useState<Property[]>([]);
 
 	/** APOLLO REQUESTS **/
@@ -46,7 +48,7 @@ const PopularProperties = (props: PopularPropertiesProps) => {
 			<Stack className={'popular-properties'}>
 				<Stack className={'container'}>
 					<Stack className={'info-box'}>
-						<span>Popular properties</span>
+						<span>{t('Popular properties')}</span>
 					</Stack>
 					<Stack className={'card-box'}>
 						<Swiper
@@ -74,13 +76,13 @@ const PopularProperties = (props: PopularPropertiesProps) => {
 				<Stack className={'container'}>
 					<Stack className={'info-box'}>
 						<Box component={'div'} className={'left'}>
-							<span>Popular properties</span>
-							<p>Popularity is based on views</p>
+							<span>{t('Popular properties')}</span>
+							<p>{t('Popularity is based on views')}</p>
 						</Box>
 						<Box component={'div'} className={'right'}>
 							<div className={'more-box'}>
 								<Link href={'/property'}>
-									<span>See All Categories</span>
+									<span>{t('See All Categories')}</span>
 								</Link>
 								<img src="/img/icons/rightup.svg" alt="" />
 							</div>

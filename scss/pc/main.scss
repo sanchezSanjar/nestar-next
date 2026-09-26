@@ -72,12 +72,15 @@ body::-webkit-scrollbar {
 					}
 					.router-box {
 						position: relative;
-						width: 617px;
+						// grows past 617px for longer languages (uz, ru) instead of squeezing the items together
+						min-width: 617px;
+						gap: 28px;
 						display: flex;
 						flex-direction: row;
 						justify-content: space-between;
 						div {
 							position: relative;
+							white-space: nowrap;
 							color: #eeeeeeed;
 							font-family: $font;
 							font-size: 15px;
@@ -114,7 +117,11 @@ body::-webkit-scrollbar {
 						flex-direction: row;
 						justify-content: flex-end;
 						.join-box {
-							width: 184px;
+							// fits longer login labels (e.g. "Kirish / Ro‘yxatdan o‘tish")
+							min-width: 184px;
+							padding: 0 20px;
+							box-sizing: border-box;
+							white-space: nowrap;
 							height: 47px;
 							display: flex;
 							align-items: center;

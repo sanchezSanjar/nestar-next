@@ -18,6 +18,45 @@ import { userVar } from '../../apollo/store';
 import { Logout } from '@mui/icons-material';
 import { REACT_APP_API_URL } from '../config';
 
+// Defined outside Top so it isn't recreated (and the menu remounted) on every render
+const StyledMenu = styled((props: MenuProps) => (
+	<Menu
+		elevation={0}
+		anchorOrigin={{
+			vertical: 'bottom',
+			horizontal: 'right',
+		}}
+		transformOrigin={{
+			vertical: 'top',
+			horizontal: 'right',
+		}}
+		{...props}
+	/>
+))(({ theme }) => ({
+	'& .MuiPaper-root': {
+		top: '109px',
+		borderRadius: 6,
+		marginTop: theme.spacing(1),
+		minWidth: 160,
+		color: theme.palette.mode === 'light' ? 'rgb(55, 65, 81)' : theme.palette.grey[300],
+		boxShadow:
+			'rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px',
+		'& .MuiMenu-list': {
+			padding: '4px 0',
+		},
+		'& .MuiMenuItem-root': {
+			'& .MuiSvgIcon-root': {
+				fontSize: 18,
+				color: theme.palette.text.secondary,
+				marginRight: theme.spacing(1.5),
+			},
+			'&:active': {
+				backgroundColor: alpha(theme.palette.primary.main, theme.palette.action.selectedOpacity),
+			},
+		},
+	},
+}));
+
 const Top = () => {
 	const device = useDeviceDetect();
 	const user = useReactiveVar(userVar);
@@ -35,13 +74,11 @@ const Top = () => {
 
 	/** LIFECYCLES **/
 	useEffect(() => {
-		if (localStorage.getItem('locale') === null) {
-			localStorage.setItem('locale', 'en');
-			setLang('en');
-		} else {
-			setLang(localStorage.getItem('locale'));
-		}
-	}, [router]);
+		// show the flag of the language the page is actually in (direct links / bookmarks included)
+		const locale = router.locale ?? 'en';
+		localStorage.setItem('locale', locale);
+		setLang(locale);
+	}, [router.locale]);
 
 	useEffect(() => {
 		switch (router.pathname) {
@@ -58,6 +95,12 @@ const Top = () => {
 		if (jwt) updateUserInfo(jwt);
 	}, []);
 
+	useEffect(() => {
+		changeNavbarColor();
+		window.addEventListener('scroll', changeNavbarColor);
+		return () => window.removeEventListener('scroll', changeNavbarColor);
+	}, []);
+
 	/** HANDLERS **/
 	const langClick = (e: any) => {
 		setAnchorEl2(e.currentTarget);
@@ -69,10 +112,12 @@ const Top = () => {
 
 	const langChoice = useCallback(
 		async (e: any) => {
-			setLang(e.target.id);
-			localStorage.setItem('locale', e.target.id);
+			// the MenuItem carries the locale id, even when the flag image inside it is what was clicked
+			const locale = e.currentTarget.id;
+			setLang(locale);
+			localStorage.setItem('locale', locale);
 			setAnchorEl2(null);
-			await router.push(router.asPath, router.asPath, { locale: e.target.id });
+			await router.push(router.asPath, router.asPath, { locale });
 		},
 		[router],
 	);
@@ -97,47 +142,6 @@ const Top = () => {
 		}
 	};
 
-	const StyledMenu = styled((props: MenuProps) => (
-		<Menu
-			elevation={0}
-			anchorOrigin={{
-				vertical: 'bottom',
-				horizontal: 'right',
-			}}
-			transformOrigin={{
-				vertical: 'top',
-				horizontal: 'right',
-			}}
-			{...props}
-		/>
-	))(({ theme }) => ({
-		'& .MuiPaper-root': {
-			top: '109px',
-			borderRadius: 6,
-			marginTop: theme.spacing(1),
-			minWidth: 160,
-			color: theme.palette.mode === 'light' ? 'rgb(55, 65, 81)' : theme.palette.grey[300],
-			boxShadow:
-				'rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px',
-			'& .MuiMenu-list': {
-				padding: '4px 0',
-			},
-			'& .MuiMenuItem-root': {
-				'& .MuiSvgIcon-root': {
-					fontSize: 18,
-					color: theme.palette.text.secondary,
-					marginRight: theme.spacing(1.5),
-				},
-				'&:active': {
-					backgroundColor: alpha(theme.palette.primary.main, theme.palette.action.selectedOpacity),
-				},
-			},
-		},
-	}));
-
-	if (typeof window !== 'undefined') {
-		window.addEventListener('scroll', changeNavbarColor);
-	}
 
 	if (device == 'mobile') {
 		return (
@@ -214,7 +218,7 @@ const Top = () => {
 									>
 										<MenuItem onClick={() => logOut()}>
 											<Logout fontSize="small" style={{ color: 'blue', marginRight: '10px' }} />
-											Logout
+											{t('Logout')}
 										</MenuItem>
 									</Menu>
 								</>
@@ -251,8 +255,6 @@ const Top = () => {
 										<img
 											className="img-flag"
 											src={'/img/flag/langen.png'}
-											onClick={langChoice}
-											id="en"
 											alt={'usaFlag'}
 										/>
 										{t('English')}
@@ -261,8 +263,6 @@ const Top = () => {
 										<img
 											className="img-flag"
 											src={'/img/flag/langkr.png'}
-											onClick={langChoice}
-											id="uz"
 											alt={'koreanFlag'}
 										/>
 										{t('Korean')}
@@ -271,11 +271,13 @@ const Top = () => {
 										<img
 											className="img-flag"
 											src={'/img/flag/langru.png'}
-											onClick={langChoice}
-											id="ru"
 											alt={'russiaFlag'}
 										/>
 										{t('Russian')}
+									</MenuItem>
+									<MenuItem disableRipple onClick={langChoice} id="uz">
+										<img className="img-flag" src={'/img/flag/languz.png'} alt={'uzbekistanFlag'} />
+										{t('Uzbek')}
 									</MenuItem>
 								</StyledMenu>
 							</div>

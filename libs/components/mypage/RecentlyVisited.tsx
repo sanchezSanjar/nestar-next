@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'next-i18next';
 import { NextPage } from 'next';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
 import { Pagination, Stack, Typography } from '@mui/material';
@@ -10,6 +11,7 @@ import { useQuery } from '@apollo/client';
 
 const RecentlyVisited: NextPage = () => {
 	const device = useDeviceDetect();
+	const { t } = useTranslation('common');
 	const [recentlyVisited, setRecentlyVisited] = useState<Property[]>([]);
 	const [total, setTotal] = useState<number>(0);
 	const [searchVisited, setSearchVisited] = useState<T>({ page: 1, limit: 6 });
@@ -43,19 +45,19 @@ const RecentlyVisited: NextPage = () => {
 			<div id="my-favorites-page">
 				<Stack className="main-title-box">
 					<Stack className="right-box">
-						<Typography className="main-title">Recently Visited</Typography>
-						<Typography className="sub-title">We are glad to see you again!</Typography>
+						<Typography className="main-title">{t('Recently Visited')}</Typography>
+						<Typography className="sub-title">{t('We are glad to see you again!')}</Typography>
 					</Stack>
 				</Stack>
 				<Stack className="favorites-list-box">
 					{recentlyVisited?.length ? (
 						recentlyVisited?.map((property: Property) => {
-							return <PropertyCard property={property} recentlyVisited={true} />;
+							return <PropertyCard property={property} recentlyVisited={true} key={property?._id} />;
 						})
 					) : (
 						<div className={'no-data'}>
 							<img src="/img/icons/icoAlert.svg" alt="" />
-							<p>No Recently Visited Properties found!</p>
+							<p>{t('No Recently Visited Properties found!')}</p>
 						</div>
 					)}
 				</Stack>
@@ -72,7 +74,7 @@ const RecentlyVisited: NextPage = () => {
 						</Stack>
 						<Stack className="total-result">
 							<Typography>
-								Total {total} recently visited propert{total > 1 ? 'ies' : 'y'}
+								{t('Total {{count}} recently visited properties', { count: total })}
 							</Typography>
 						</Stack>
 					</Stack>

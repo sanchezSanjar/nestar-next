@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'next-i18next';
 import { Stack, Box } from '@mui/material';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
 import WestIcon from '@mui/icons-material/West';
@@ -22,6 +23,7 @@ interface TrendPropertiesProps {
 const TrendProperties = (props: TrendPropertiesProps) => {
 	const { initialInput } = props;
 	const device = useDeviceDetect();
+	const { t } = useTranslation('common');
 	const [trendProperties, setTrendProperties] = useState<Property[]>([]);
 
 	/** APOLLO REQUESTS **/
@@ -71,12 +73,12 @@ const TrendProperties = (props: TrendPropertiesProps) => {
 			<Stack className={'trend-properties'}>
 				<Stack className={'container'}>
 					<Stack className={'info-box'}>
-						<span>Trend Properties</span>
+						<span>{t('Trend Properties')}</span>
 					</Stack>
 					<Stack className={'card-box'}>
 						{trendProperties.length === 0 ? (
 							<Box component={'div'} className={'empty-list'}>
-								Trends Empty
+								{t('Trends Empty')}
 							</Box>
 						) : (
 							<Swiper
@@ -105,8 +107,8 @@ const TrendProperties = (props: TrendPropertiesProps) => {
 				<Stack className={'container'}>
 					<Stack className={'info-box'}>
 						<Box component={'div'} className={'left'}>
-							<span>Trend Properties</span>
-							<p>Trend is based on likes</p>
+							<span>{t('Trend Properties')}</span>
+							<p>{t('Trend is based on likes')}</p>
 						</Box>
 						<Box component={'div'} className={'right'}>
 							<div className={'pagination-box'}>
@@ -119,7 +121,7 @@ const TrendProperties = (props: TrendPropertiesProps) => {
 					<Stack className={'card-box'}>
 						{trendProperties.length === 0 ? (
 							<Box component={'div'} className={'empty-list'}>
-								Trends Empty
+								{t('Trends Empty')}
 							</Box>
 						) : (
 							<Swiper

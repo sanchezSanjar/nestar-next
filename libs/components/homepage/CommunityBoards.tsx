@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'next-i18next';
 import Link from 'next/link';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
 import { Stack, Typography } from '@mui/material';
@@ -11,6 +12,7 @@ import { BoardArticleCategory } from '../../enums/board-article.enum';
 
 const CommunityBoards = () => {
 	const device = useDeviceDetect();
+	const { t } = useTranslation('common');
 	const [searchCommunity, setSearchCommunity] = useState({
 		page: 1,
 		sort: 'articleViews',
@@ -56,13 +58,13 @@ const CommunityBoards = () => {
 			<Stack className={'community-board'}>
 				<Stack className={'container'}>
 					<Stack>
-						<Typography variant={'h1'}>COMMUNITY BOARD HIGHLIGHTS</Typography>
+						<Typography variant={'h1'}>{t('COMMUNITY BOARD HIGHLIGHTS')}</Typography>
 					</Stack>
 					<Stack className="community-main">
 						<Stack className={'community-left'}>
 							<Stack className={'content-top'}>
 								<Link href={'/community?articleCategory=NEWS'}>
-									<span>News</span>
+									<span>{t('News')}</span>
 								</Link>
 								<img src="/img/icons/arrowBig.svg" alt="" />
 							</Stack>
@@ -75,7 +77,7 @@ const CommunityBoards = () => {
 						<Stack className={'community-right'}>
 							<Stack className={'content-top'}>
 								<Link href={'/community?articleCategory=FREE'}>
-									<span>Free</span>
+									<span>{t('Free')}</span>
 								</Link>
 								<img src="/img/icons/arrowBig.svg" alt="" />
 							</Stack>

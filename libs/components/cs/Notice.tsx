@@ -1,9 +1,11 @@
 import React from 'react';
+import { useTranslation } from 'next-i18next';
 import { Stack, Box } from '@mui/material';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
 
 const Notice = () => {
 	const device = useDeviceDetect();
+	const { t } = useTranslation('common');
 
 	/** APOLLO REQUESTS **/
 	/** LIFECYCLES **/
@@ -28,18 +30,18 @@ const Notice = () => {
 	} else {
 		return (
 			<Stack className={'notice-content'}>
-				<span className={'title'}>Notice</span>
+				<span className={'title'}>{t('Notice')}</span>
 				<Stack className={'main'}>
 					<Box component={'div'} className={'top'}>
-						<span>number</span>
-						<span>title</span>
-						<span>date</span>
+						<span>{t('number')}</span>
+						<span>{t('title')}</span>
+						<span>{t('date')}</span>
 					</Box>
 					<Stack className={'bottom'}>
 						{data.map((ele: any) => (
 							<div className={`notice-card ${ele?.event && 'event'}`} key={ele.title}>
-								{ele?.event ? <div>event</div> : <span className={'notice-number'}>{ele.no}</span>}
-								<span className={'notice-title'}>{ele.title}</span>
+								{ele?.event ? <div>{t('event')}</div> : <span className={'notice-number'}>{ele.no}</span>}
+								<span className={'notice-title'}>{t(ele.title)}</span>
 								<span className={'notice-date'}>{ele.date}</span>
 							</div>
 						))}

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { Stack, Typography, Box, List, ListItem, Button } from '@mui/material';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
@@ -17,6 +18,7 @@ interface MemberMenuProps {
 const MemberMenu = (props: MemberMenuProps) => {
 	const { subscribeHandler, unsubscribeHandler } = props;
 	const device = useDeviceDetect();
+	const { t } = useTranslation('common');
 	const router = useRouter();
 	const category: any = router.query?.category;
 	const [member, setMember] = useState<Member | null>(null);
@@ -56,7 +58,7 @@ const MemberMenu = (props: MemberMenuProps) => {
 							<img src={'/img/icons/call.svg'} alt={'icon'} />
 							<Typography className={'p-number'}>{member?.memberPhone}</Typography>
 						</Box>
-						<Typography className={'view-list'}>{member?.memberType}</Typography>
+						<Typography className={'view-list'}>{member?.memberType && t(member.memberType)}</Typography>
 					</Stack>
 				</Stack>
 				<Stack className="follow-button-box">
@@ -67,9 +69,9 @@ const MemberMenu = (props: MemberMenuProps) => {
 								sx={{ background: '#b9b9b9' }}
 								onClick={() => unsubscribeHandler(member?._id, getMemberRefetch, memberId)}
 							>
-								Unfollow
+								{t('Unfollow')}
 							</Button>
-							<Typography>Following</Typography>
+							<Typography>{t('Following')}</Typography>
 						</>
 					) : (
 						<Button
@@ -77,14 +79,14 @@ const MemberMenu = (props: MemberMenuProps) => {
 							sx={{ background: '#ff5d18', ':hover': { background: '#ff5d18' } }}
 							onClick={() => subscribeHandler(member?._id, getMemberRefetch, memberId)}
 						>
-							Follow
+							{t('Follow')}
 						</Button>
 					)}
 				</Stack>
 				<Stack className={'sections'}>
 					<Stack className={'section'}>
 						<Typography className="title" variant={'h5'}>
-							Details
+							{t('Details')}
 						</Typography>
 						<List className={'sub-section'}>
 							{member?.memberType === 'AGENT' && (
@@ -104,7 +106,7 @@ const MemberMenu = (props: MemberMenuProps) => {
 												<img className={'com-icon'} src={'/img/icons/home.svg'} alt={'com-icon'} />
 											)}
 											<Typography className={'sub-title'} variant={'subtitle1'} component={'p'}>
-												Properties
+												{t('Properties')}
 											</Typography>
 											<Typography className="count-title" variant="subtitle1">
 												{member?.memberProperties}
@@ -156,7 +158,7 @@ const MemberMenu = (props: MemberMenuProps) => {
 											</g>
 										</svg>
 										<Typography className={'sub-title'} variant={'subtitle1'} component={'p'}>
-											Followers
+											{t('Followers')}
 										</Typography>
 										<Typography className="count-title" variant="subtitle1">
 											{member?.memberFollowers}
@@ -207,7 +209,7 @@ const MemberMenu = (props: MemberMenuProps) => {
 											</g>
 										</svg>
 										<Typography className={'sub-title'} variant={'subtitle1'} component={'p'}>
-											Followings
+											{t('Followings')}
 										</Typography>
 										<Typography className="count-title" variant="subtitle1">
 											{member?.memberFollowings}
@@ -220,7 +222,7 @@ const MemberMenu = (props: MemberMenuProps) => {
 					<Stack className={'section'} sx={{ marginTop: '10px' }}>
 						<div>
 							<Typography className="title" variant={'h5'}>
-								Community
+								{t('Community')}
 							</Typography>
 							<List className={'sub-section'}>
 								<ListItem className={category === 'articles' ? 'focus' : ''}>
@@ -240,7 +242,7 @@ const MemberMenu = (props: MemberMenuProps) => {
 											)}
 
 											<Typography className={'sub-title'} variant={'subtitle1'} component={'p'}>
-												Articles
+												{t('Articles')}
 											</Typography>
 											<Typography className="count-title" variant="subtitle1">
 												{member?.memberArticles}

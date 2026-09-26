@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'next-i18next';
 import  router, { useRouter } from 'next/router';
 import { Button, Stack, Typography } from '@mui/material';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
 import { PropertyLocation, PropertyType } from '../../enums/property.enum';
-import { REACT_APP_API_URL, propertySquare } from '../../config';
+import { Messages, REACT_APP_API_URL, propertySquare } from '../../config';
 import { PropertyInput } from '../../types/property/property.input';
 import axios from 'axios';
 import { getJwtToken } from '../../auth';
@@ -16,6 +17,7 @@ import { GET_PROPERTY } from '../../../apollo/user/query';
 
 const AddProperty = ({ initialValues, ...props }: any) => {
 	const device = useDeviceDetect();
+	const { t } = useTranslation('common');
 	const router = useRouter();
 	const inputRef = useRef<any>(null);
 	const [insertPropertyData, setInsertPropertyData] = useState<PropertyInput>(initialValues);
@@ -38,6 +40,8 @@ const AddProperty = ({ initialValues, ...props }: any) => {
 		variables: {
 			input: router.query.propertyId,
 		},
+		// only editing loads an existing property; adding a new one has no id
+		skip: !router.query.propertyId,
 	});
 
 	/** LIFECYCLES **/
@@ -60,57 +64,71 @@ const AddProperty = ({ initialValues, ...props }: any) => {
 	}, [getPropertyLoading, getPropertyData]);
 
 	/** HANDLERS **/
-	async function uploadImages() {
+	const MAX_IMAGES = 5;
+	const allowedImageTypes = ['image/png', 'image/jpg', 'image/jpeg'];
+	const MAX_IMAGE_SIZE = 15_000_000; // must match maxFileSize in the API's graphqlUploadExpress
+
+	// Used by both the file picker and drag & drop. Adds to the images already uploaded instead of replacing them.
+	async function uploadImages(fileList: FileList | null) {
 		try {
+			const files = Array.from(fileList ?? []);
+			if (files.length === 0) return false;
+			if (files.some((file) => !allowedImageTypes.includes(file.type))) throw new Error(Messages.error5);
+			const tooLarge = files.filter((file) => file.size > MAX_IMAGE_SIZE);
+			if (tooLarge.length)
+				throw new Error(`Each image must be under 15 MB: ${tooLarge.map((file) => file.name).join(', ')}`);
+
+			const currentImages = insertPropertyData.propertyImages ?? [];
+			if (currentImages.length + files.length > MAX_IMAGES)
+				throw new Error(`You can upload up to ${MAX_IMAGES} images (${currentImages.length} already added).`);
+
 			const formData = new FormData();
-			const selectedFiles = inputRef.current.files;
-
-			if (selectedFiles.length == 0) return false;
-			if (selectedFiles.length > 5) throw new Error('Cannot upload more than 5 images!');
-
 			formData.append(
 				'operations',
 				JSON.stringify({
-					query: `mutation ImagesUploader($files: [Upload!]!, $target: String!) { 
+					query: `mutation ImagesUploader($files: [Upload!]!, $target: String!) {
 						imagesUploader(files: $files, target: $target)
 				  }`,
 					variables: {
-						files: [null, null, null, null, null],
+						files: files.map(() => null),
 						target: 'property',
 					},
 				}),
 			);
-			formData.append(
-				'map',
-				JSON.stringify({
-					'0': ['variables.files.0'],
-					'1': ['variables.files.1'],
-					'2': ['variables.files.2'],
-					'3': ['variables.files.3'],
-					'4': ['variables.files.4'],
-				}),
-			);
-			for (const key in selectedFiles) {
-				if (/^\d+$/.test(key)) formData.append(`${key}`, selectedFiles[key]);
-			}
+			const map: Record<string, string[]> = {};
+			files.forEach((_, index) => (map[index] = [`variables.files.${index}`]));
+			formData.append('map', JSON.stringify(map));
+			files.forEach((file, index) => formData.append(`${index}`, file));
 
 			const response = await axios.post(`${process.env.REACT_APP_API_GRAPHQL_URL}`, formData, {
 				headers: {
 					'Content-Type': 'multipart/form-data',
 					'apollo-require-preflight': true,
-					Authorization: `Bearer ${token}`,
+					Authorization: `Bearer ${getJwtToken()}`,
 				},
+				timeout: 60000,
 			});
 
-			const responseImages = response.data.data.imagesUploader;
+			if (response.data.errors?.length) throw new Error(response.data.errors[0].message);
+			const responseImages: string[] = response.data.data?.imagesUploader ?? [];
+			// the API silently skips files it could not save
+			if (responseImages.length < files.length) await sweetMixinErrorAlert('Some images could not be uploaded.');
 
-			console.log('+responseImages: ', responseImages);
-			setInsertPropertyData({ ...insertPropertyData, propertyImages: responseImages });
+			setInsertPropertyData((prev) => ({ ...prev, propertyImages: [...(prev.propertyImages ?? []), ...responseImages] }));
 		} catch (err: any) {
 			console.log('err: ', err.message);
 			await sweetMixinErrorAlert(err.message);
+		} finally {
+			// allow picking the same file again
+			if (inputRef.current) inputRef.current.value = '';
 		}
 	}
+
+	const dropImagesHandler = (e: React.DragEvent<HTMLElement>) => {
+		// without preventDefault the browser opens the dropped file and leaves the page
+		e.preventDefault();
+		uploadImages(e.dataTransfer.files);
+	};
 
 	const doDisabledCheck = () => {
 		if (
@@ -153,11 +171,9 @@ const AddProperty = ({ initialValues, ...props }: any) => {
 	  
 	  const updatePropertyHandler = useCallback(async () => {
 		try {
-		  // @ts-ignore
-		  insertPropertyData._id = getPropertyData?.getProperty?._id;
 		  const result = await updateProperty({
 			variables: {
-			  input: insertPropertyData,
+			  input: { ...insertPropertyData, _id: getPropertyData?.getProperty?._id },
 			},
 		  });
 	  
@@ -173,11 +189,10 @@ const AddProperty = ({ initialValues, ...props }: any) => {
 		}
 	  }, [insertPropertyData]);
 
-	if (user?.memberType !== 'AGENT') {
-		router.back();
-	}
-
-	console.log('+insertPropertyData', insertPropertyData);
+	useEffect(() => {
+		// wait until the user is restored from the JWT; redirecting during render also ran on every re-render
+		if (user?._id && user.memberType !== 'AGENT') router.back();
+	}, [user?._id, user?.memberType]);
 
 	if (device === 'mobile') {
 		return <div>ADD NEW PROPERTY MOBILE PAGE</div>;
@@ -185,19 +200,19 @@ const AddProperty = ({ initialValues, ...props }: any) => {
 		return (
 			<div id="add-property-page">
 				<Stack className="main-title-box">
-					<Typography className="main-title">Add New Property</Typography>
-					<Typography className="sub-title">We are glad to see you again!</Typography>
+					<Typography className="main-title">{t('Add New Property')}</Typography>
+					<Typography className="sub-title">{t('We are glad to see you again!')}</Typography>
 				</Stack>
 
 				<div>
 					<Stack className="config">
 						<Stack className="description-box">
 							<Stack className="config-column">
-								<Typography className="title">Title</Typography>
+								<Typography className="title">{t('Title')}</Typography>
 								<input
 									type="text"
 									className="description-input"
-									placeholder={'Title'}
+									placeholder={t('Title')}
 									value={insertPropertyData.propertyTitle}
 									onChange={({ target: { value } }) =>
 										setInsertPropertyData({ ...insertPropertyData, propertyTitle: value })
@@ -207,22 +222,21 @@ const AddProperty = ({ initialValues, ...props }: any) => {
 
 							<Stack className="config-row">
 								<Stack className="price-year-after-price">
-									<Typography className="title">Price</Typography>
+									<Typography className="title">{t('Price')}</Typography>
 									<input
 										type="text"
 										className="description-input"
-										placeholder={'Price'}
+										placeholder={t('Price')}
 										value={insertPropertyData.propertyPrice}
 										onChange={({ target: { value } }) =>
-											setInsertPropertyData({ ...insertPropertyData, propertyPrice: parseInt(value) })
+											setInsertPropertyData({ ...insertPropertyData, propertyPrice: Number(value.replace(/\D/g, '')) })
 										}
 									/>
 								</Stack>
 								<Stack className="price-year-after-price">
-									<Typography className="title">Select Type</Typography>
+									<Typography className="title">{t('Select Type')}</Typography>
 									<select
 										className={'select-description'}
-										defaultValue={insertPropertyData.propertyType || 'select'}
 										value={insertPropertyData.propertyType || 'select'}
 										onChange={({ target: { value } }) =>
 											// @ts-ignore
@@ -230,12 +244,12 @@ const AddProperty = ({ initialValues, ...props }: any) => {
 										}
 									>
 										<>
-											<option selected={true} disabled={true} value={'select'}>
-												Select
+											<option disabled={true} value={'select'}>
+												{t('Select')}
 											</option>
 											{propertyType.map((type: any) => (
 												<option value={`${type}`} key={type}>
-													{type}
+													{t(type)}
 												</option>
 											))}
 										</>
@@ -247,10 +261,9 @@ const AddProperty = ({ initialValues, ...props }: any) => {
 
 							<Stack className="config-row">
 								<Stack className="price-year-after-price">
-									<Typography className="title">Select Location</Typography>
+									<Typography className="title">{t('Select Location')}</Typography>
 									<select
 										className={'select-description'}
-										defaultValue={insertPropertyData.propertyLocation || 'select'}
 										value={insertPropertyData.propertyLocation || 'select'}
 										onChange={({ target: { value } }) =>
 											// @ts-ignore
@@ -258,12 +271,12 @@ const AddProperty = ({ initialValues, ...props }: any) => {
 										}
 									>
 										<>
-											<option selected={true} disabled={true} value={'select'}>
-												Select
+											<option disabled={true} value={'select'}>
+												{t('Select')}
 											</option>
 											{propertyLocation.map((location: any) => (
 												<option value={`${location}`} key={location}>
-													{location}
+													{t(location)}
 												</option>
 											))}
 										</>
@@ -272,11 +285,11 @@ const AddProperty = ({ initialValues, ...props }: any) => {
 									<img src={'/img/icons/Vector.svg'} className={'arrow-down'} />
 								</Stack>
 								<Stack className="price-year-after-price">
-									<Typography className="title">Address</Typography>
+									<Typography className="title">{t('Address')}</Typography>
 									<input
 										type="text"
 										className="description-input"
-										placeholder={'Address'}
+										placeholder={t('Address')}
 										value={insertPropertyData.propertyAddress}
 										onChange={({ target: { value } }) =>
 											setInsertPropertyData({ ...insertPropertyData, propertyAddress: value })
@@ -287,39 +300,37 @@ const AddProperty = ({ initialValues, ...props }: any) => {
 
 							<Stack className="config-row">
 								<Stack className="price-year-after-price">
-									<Typography className="title">Barter</Typography>
+									<Typography className="title">{t('Barter')}</Typography>
 									<select
 										className={'select-description'}
 										value={insertPropertyData.propertyBarter ? 'yes' : 'no'}
-										defaultValue={insertPropertyData.propertyBarter ? 'yes' : 'no'}
 										onChange={({ target: { value } }) =>
 											setInsertPropertyData({ ...insertPropertyData, propertyBarter: value === 'yes' })
 										}
 									>
-										<option disabled={true} selected={true}>
-											Select
+										<option disabled={true}>
+											{t('Select')}
 										</option>
-										<option value={'yes'}>Yes</option>
-										<option value={'no'}>No</option>
+										<option value={'yes'}>{t('Yes')}</option>
+										<option value={'no'}>{t('No')}</option>
 									</select>
 									<div className={'divider'}></div>
 									<img src={'/img/icons/Vector.svg'} className={'arrow-down'} />
 								</Stack>
 								<Stack className="price-year-after-price">
-									<Typography className="title">Rent</Typography>
+									<Typography className="title">{t('Rent')}</Typography>
 									<select
 										className={'select-description'}
 										value={insertPropertyData.propertyRent ? 'yes' : 'no'}
-										defaultValue={insertPropertyData.propertyRent ? 'yes' : 'no'}
 										onChange={({ target: { value } }) =>
 											setInsertPropertyData({ ...insertPropertyData, propertyRent: value === 'yes' })
 										}
 									>
-										<option disabled={true} selected={true}>
-											Select
+										<option disabled={true}>
+											{t('Select')}
 										</option>
-										<option value={'yes'}>Yes</option>
-										<option value={'no'}>No</option>
+										<option value={'yes'}>{t('Yes')}</option>
+										<option value={'no'}>{t('No')}</option>
 									</select>
 									<div className={'divider'}></div>
 									<img src={'/img/icons/Vector.svg'} className={'arrow-down'} />
@@ -328,61 +339,58 @@ const AddProperty = ({ initialValues, ...props }: any) => {
 
 							<Stack className="config-row">
 								<Stack className="price-year-after-price">
-									<Typography className="title">Rooms</Typography>
+									<Typography className="title">{t('Rooms')}</Typography>
 									<select
 										className={'select-description'}
 										value={insertPropertyData.propertyRooms || 'select'}
-										defaultValue={insertPropertyData.propertyRooms || 'select'}
 										onChange={({ target: { value } }) =>
 											setInsertPropertyData({ ...insertPropertyData, propertyRooms: parseInt(value) })
 										}
 									>
-										<option disabled={true} selected={true} value={'select'}>
-											Select
+										<option disabled={true} value={'select'}>
+											{t('Select')}
 										</option>
 										{[1, 2, 3, 4, 5].map((room: number) => (
-											<option value={`${room}`}>{room}</option>
+											<option value={`${room}`} key={room}>{room}</option>
 										))}
 									</select>
 									<div className={'divider'}></div>
 									<img src={'/img/icons/Vector.svg'} className={'arrow-down'} />
 								</Stack>
 								<Stack className="price-year-after-price">
-									<Typography className="title">Bed</Typography>
+									<Typography className="title">{t('Bed')}</Typography>
 									<select
 										className={'select-description'}
 										value={insertPropertyData.propertyBeds || 'select'}
-										defaultValue={insertPropertyData.propertyBeds || 'select'}
 										onChange={({ target: { value } }) =>
 											setInsertPropertyData({ ...insertPropertyData, propertyBeds: parseInt(value) })
 										}
 									>
-										<option disabled={true} selected={true} value={'select'}>
-											Select
+										<option disabled={true} value={'select'}>
+											{t('Select')}
 										</option>
 										{[1, 2, 3, 4, 5].map((bed: number) => (
-											<option value={`${bed}`}>{bed}</option>
+											<option value={`${bed}`} key={bed}>{bed}</option>
 										))}
 									</select>
 									<div className={'divider'}></div>
 									<img src={'/img/icons/Vector.svg'} className={'arrow-down'} />
 								</Stack>
 								<Stack className="price-year-after-price">
-									<Typography className="title">Square</Typography>
+									<Typography className="title">{t('Square')}</Typography>
 									<select
 										className={'select-description'}
 										value={insertPropertyData.propertySquare || 'select'}
-										defaultValue={insertPropertyData.propertySquare || 'select'}
 										onChange={({ target: { value } }) =>
 											setInsertPropertyData({ ...insertPropertyData, propertySquare: parseInt(value) })
 										}
 									>
-										<option disabled={true} selected={true} value={'select'}>
-											Select
+										<option disabled={true} value={'select'}>
+											{t('Select')}
 										</option>
 										{propertySquare.map((square: number) => {
 											if (square !== 0) {
-												return <option value={`${square}`}>{square}</option>;
+												return <option value={`${square}`} key={square}>{square}</option>;
 											}
 										})}
 									</select>
@@ -391,9 +399,9 @@ const AddProperty = ({ initialValues, ...props }: any) => {
 								</Stack>
 							</Stack>
 
-							<Typography className="property-title">Property Description</Typography>
+							<Typography className="property-title">{t('Property Description')}</Typography>
 							<Stack className="config-column">
-								<Typography className="title">Description</Typography>
+								<Typography className="title">{t('Description')}</Typography>
 								<textarea
 									name=""
 									id=""
@@ -406,9 +414,9 @@ const AddProperty = ({ initialValues, ...props }: any) => {
 							</Stack>
 						</Stack>
 
-						<Typography className="upload-title">Upload photos of your property</Typography>
+						<Typography className="upload-title">{t('Upload photos of your property')}</Typography>
 						<Stack className="images-box">
-							<Stack className="upload-box">
+							<Stack className="upload-box" onDragOver={(e: React.DragEvent<HTMLElement>) => e.preventDefault()} onDrop={dropImagesHandler}>
 								<svg xmlns="http://www.w3.org/2000/svg" width="121" height="120" viewBox="0 0 121 120" fill="none">
 									<g clipPath="url(#clip0_7037_5336)">
 										<path
@@ -451,8 +459,8 @@ const AddProperty = ({ initialValues, ...props }: any) => {
 									</defs>
 								</svg>
 								<Stack className="text-box">
-									<Typography className="drag-title">Drag and drop images here</Typography>
-									<Typography className="format-title">Photos must be JPEG or PNG format and least 2048x768</Typography>
+									<Typography className="drag-title">{t('Drag and drop images here')}</Typography>
+									<Typography className="format-title">{t('Photos must be JPEG or PNG format and least 2048x768')}</Typography>
 								</Stack>
 								<Button
 									className="browse-button"
@@ -460,12 +468,12 @@ const AddProperty = ({ initialValues, ...props }: any) => {
 										inputRef.current.click();
 									}}
 								>
-									<Typography className="browse-button-text">Browse Files</Typography>
+									<Typography className="browse-button-text">{t('Browse Files')}</Typography>
 									<input
 										ref={inputRef}
 										type="file"
 										hidden={true}
-										onChange={uploadImages}
+										onChange={(e) => uploadImages(e.target.files)}
 										multiple={true}
 										accept="image/jpg, image/jpeg, image/png"
 									/>
@@ -488,7 +496,7 @@ const AddProperty = ({ initialValues, ...props }: any) => {
 								{insertPropertyData?.propertyImages.map((image: string) => {
 									const imagePath: string = `${REACT_APP_API_URL}/${image}`;
 									return (
-										<Stack className="image-box">
+										<Stack className="image-box" key={image}>
 											<img src={imagePath} alt="" />
 										</Stack>
 									);
@@ -499,11 +507,11 @@ const AddProperty = ({ initialValues, ...props }: any) => {
 						<Stack className="buttons-row">
 							{router.query.propertyId ? (
 								<Button className="next-button" disabled={doDisabledCheck()} onClick={updatePropertyHandler}>
-									<Typography className="next-button-text">Save</Typography>
+									<Typography className="next-button-text">{t('Save')}</Typography>
 								</Button>
 							) : (
 								<Button className="next-button" disabled={doDisabledCheck()} onClick={insertPropertyHandler}>
-									<Typography className="next-button-text">Save</Typography>
+									<Typography className="next-button-text">{t('Save')}</Typography>
 								</Button>
 							)}
 						</Stack>

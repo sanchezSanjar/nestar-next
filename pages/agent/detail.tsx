@@ -1,4 +1,5 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
+import { useTranslation } from 'next-i18next';
 import { NextPage } from 'next';
 import useDeviceDetect from '../../libs/hooks/useDeviceDetect';
 import withLayoutBasic from '../../libs/components/layout/LayoutBasic';
@@ -29,6 +30,7 @@ export const getStaticProps = async ({ locale }: any) => ({
 
 const AgentDetail: NextPage = ({ initialInput, initialComment, ...props }: any) => {
 	const device = useDeviceDetect();
+	const { t } = useTranslation('common');
 	const router = useRouter();
 	const user = useReactiveVar(userVar);
 	const [agentId, setAgentId] = useState<string | null>(null);
@@ -213,28 +215,28 @@ const AgentDetail: NextPage = ({ initialInput, initialComment, ...props }: any) 
 										/>
 									</Stack>
 									<span>
-										Total {propertyTotal} propert{propertyTotal > 1 ? 'ies' : 'y'} available
+										{t('Total {{count}} properties available', { count: propertyTotal })}
 									</span>
 								</>
 							) : (
 								<div className={'no-data'}>
 									<img src="/img/icons/icoAlert.svg" alt="" />
-									<p>No properties found!</p>
+									<p>{t('No properties found!')}</p>
 								</div>
 							)}
 						</Stack>
 					</Stack>
 					<Stack className={'review-box'}>
 						<Stack className={'main-intro'}>
-							<span>Reviews</span>
-							<p>we are glad to see you again</p>
+							<span>{t('Reviews')}</span>
+							<p>{t('we are glad to see you again')}</p>
 						</Stack>
 						{commentTotal !== 0 && (
 							<Stack className={'review-wrap'}>
 								<Box component={'div'} className={'title-box'}>
 									<StarIcon />
 									<span>
-										{commentTotal} review{commentTotal > 1 ? 's' : ''}
+										{t('{{count}} reviews', { count: commentTotal })}
 									</span>
 								</Box>
 								{agentComments?.map((comment: Comment) => {
@@ -253,8 +255,8 @@ const AgentDetail: NextPage = ({ initialInput, initialComment, ...props }: any) 
 						)}
 
 						<Stack className={'leave-review-config'}>
-							<Typography className={'main-title'}>Leave A Review</Typography>
-							<Typography className={'review-title'}>Review</Typography>
+							<Typography className={'main-title'}>{t('Leave A Review')}</Typography>
+							<Typography className={'review-title'}>{t('Review')}</Typography>
 							<textarea
 								onChange={({ target: { value } }: any) => {
 									setInsertCommentData({ ...insertCommentData, commentContent: value });
@@ -267,7 +269,7 @@ const AgentDetail: NextPage = ({ initialInput, initialComment, ...props }: any) 
 									disabled={insertCommentData.commentContent === '' || user?._id === ''}
 									onClick={createCommentHandler}
 								>
-									<Typography className={'title'}>Submit Review</Typography>
+									<Typography className={'title'}>{t('Submit Review')}</Typography>
 									<svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 17 17" fill="none">
 										<g clipPath="url(#clip0_6975_3642)">
 											<path

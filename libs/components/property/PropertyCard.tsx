@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'next-i18next';
 import { Stack, Typography, Box } from '@mui/material';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -22,6 +23,7 @@ interface PropertyCardType {
 const PropertyCard = (props: PropertyCardType) => {
 	const { property, likePropertyHandler, myFavorites, recentlyVisited } = props;
 	const device = useDeviceDetect();
+	const { t } = useTranslation('common');
 	const user = useReactiveVar(userVar);
 	const imagePath: string = property?.propertyImages[0]
 		? `${REACT_APP_API_URL}/${property?.propertyImages[0]}`
@@ -44,7 +46,7 @@ const PropertyCard = (props: PropertyCardType) => {
 					{property && property?.propertyRank > topPropertyRank && (
 						<Box component={'div'} className={'top-badge'}>
 							<img src="/img/icons/electricity.svg" alt="" />
-							<Typography>TOP</Typography>
+							<Typography>{t('TOP')}</Typography>
 						</Box>
 					)}
 					<Box component={'div'} className={'price-box'}>
@@ -65,19 +67,19 @@ const PropertyCard = (props: PropertyCardType) => {
 						</Stack>
 						<Stack className="address">
 							<Typography>
-								{property.propertyAddress}, {property.propertyLocation}
+								{property.propertyAddress}, {t(property.propertyLocation)}
 							</Typography>
 						</Stack>
 					</Stack>
 					<Stack className="options">
 						<Stack className="option">
-							<img src="/img/icons/bed.svg" alt="" /> <Typography>{property.propertyBeds} bed</Typography>
+							<img src="/img/icons/bed.svg" alt="" /> <Typography>{t('{{count}} bed', { count: property.propertyBeds })}</Typography>
 						</Stack>
 						<Stack className="option">
-							<img src="/img/icons/room.svg" alt="" /> <Typography>{property.propertyRooms} room</Typography>
+							<img src="/img/icons/room.svg" alt="" /> <Typography>{t('{{count}} rooms', { count: property.propertyRooms })}</Typography>
 						</Stack>
 						<Stack className="option">
-							<img src="/img/icons/expand.svg" alt="" /> <Typography>{property.propertySquare} m2</Typography>
+							<img src="/img/icons/expand.svg" alt="" /> <Typography>{t('{{count}} m2', { count: property.propertySquare })}</Typography>
 						</Stack>
 					</Stack>
 					<Stack className="divider"></Stack>
@@ -87,13 +89,13 @@ const PropertyCard = (props: PropertyCardType) => {
 								sx={{ fontWeight: 500, fontSize: '13px' }}
 								className={property.propertyRent ? '' : 'disabled-type'}
 							>
-								Rent
+								{t('Rent')}
 							</Typography>
 							<Typography
 								sx={{ fontWeight: 500, fontSize: '13px' }}
 								className={property.propertyBarter ? '' : 'disabled-type'}
 							>
-								Barter
+								{t('Barter')}
 							</Typography>
 						</Stack>
 						{!recentlyVisited && (

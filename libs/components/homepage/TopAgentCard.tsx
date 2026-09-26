@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { Stack } from '@mui/material';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
@@ -10,6 +11,7 @@ interface TopAgentProps {
 const TopAgentCard = (props: TopAgentProps) => {
 	const { agent } = props;
 	const device = useDeviceDetect();
+	const { t } = useTranslation('common');
 	const router = useRouter();
 	const agentImage = agent?.memberImage
 		? `${process.env.REACT_APP_API_URL}/${agent?.memberImage}`
@@ -26,7 +28,7 @@ const TopAgentCard = (props: TopAgentProps) => {
 				<img src={agentImage} alt="" />
 
 				<strong>{agent?.memberNick}</strong>
-				<span>{agent?.memberType}</span>
+				<span>{agent?.memberType && t(agent.memberType)}</span>
 			</Stack>
 		);
 	} else {
@@ -35,7 +37,7 @@ const TopAgentCard = (props: TopAgentProps) => {
 				<img src={agentImage} alt="" />
 
 				<strong>{agent?.memberNick}</strong>
-				<span>{agent?.memberType}</span>
+				<span>{agent?.memberType && t(agent.memberType)}</span>
 			</Stack>
 		);
 	}

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'next-i18next';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
@@ -25,6 +26,7 @@ export const getStaticProps = async ({ locale }: any) => ({
 
 const Community: NextPage = ({ initialInput, ...props }: T) => {
 	const device = useDeviceDetect();
+	const { t } = useTranslation('common');
 	const router = useRouter();
 	const { query } = router;
 	const articleCategory = query?.articleCategory as string;
@@ -124,7 +126,7 @@ const Community: NextPage = ({ initialInput, ...props }: T) => {
 								<Stack className={'image-info'}>
 									<img src={'/img/logo/logoText.svg'} />
 									<Stack className={'community-name'}>
-										<Typography className={'name'}>Nestar Community</Typography>
+										<Typography className={'name'}>{t('Nestar Community')}</Typography>
 									</Stack>
 								</Stack>
 
@@ -138,22 +140,22 @@ const Community: NextPage = ({ initialInput, ...props }: T) => {
 								>
 									<Tab
 										value={'FREE'}
-										label={'Free Board'}
+										label={t('Free Board')}
 										className={`tab-button ${searchCommunity.search.articleCategory == 'FREE' ? 'active' : ''}`}
 									/>
 									<Tab
 										value={'RECOMMEND'}
-										label={'Recommendation'}
+										label={t('Recommendation')}
 										className={`tab-button ${searchCommunity.search.articleCategory == 'RECOMMEND' ? 'active' : ''}`}
 									/>
 									<Tab
 										value={'NEWS'}
-										label={'News'}
+										label={t('News')}
 										className={`tab-button ${searchCommunity.search.articleCategory == 'NEWS' ? 'active' : ''}`}
 									/>
 									<Tab
 										value={'HUMOR'}
-										label={'Humor'}
+										label={t('Humor')}
 										className={`tab-button ${searchCommunity.search.articleCategory == 'HUMOR' ? 'active' : ''}`}
 									/>
 								</TabList>
@@ -162,9 +164,9 @@ const Community: NextPage = ({ initialInput, ...props }: T) => {
 								<Stack className="panel-config">
 									<Stack className="title-box">
 										<Stack className="left">
-											<Typography className="title">{searchCommunity.search.articleCategory} BOARD</Typography>
+											<Typography className="title">{t('{{category}} BOARD', { category: t(searchCommunity.search.articleCategory) })}</Typography>
 											<Typography className="sub-title">
-												Express your opinions freely here without content restrictions
+												{t('Express your opinions freely here without content restrictions')}
 											</Typography>
 										</Stack>
 										<Button
@@ -178,7 +180,7 @@ const Community: NextPage = ({ initialInput, ...props }: T) => {
 											}
 											className="right"
 										>
-											Write
+											{t('Write')}
 										</Button>
 									</Stack>
 
@@ -197,7 +199,7 @@ const Community: NextPage = ({ initialInput, ...props }: T) => {
 											) : (
 												<Stack className={'no-data'}>
 													<img src="/img/icons/icoAlert.svg" alt="" />
-													<p>No Article found!</p>
+													<p>{t('No Article found!')}</p>
 												</Stack>
 											)}
 										</Stack>
@@ -211,7 +213,7 @@ const Community: NextPage = ({ initialInput, ...props }: T) => {
 											) : (
 												<Stack className={'no-data'}>
 													<img src="/img/icons/icoAlert.svg" alt="" />
-													<p>No Article found!</p>
+													<p>{t('No Article found!')}</p>
 												</Stack>
 											)}
 										</Stack>
@@ -225,7 +227,7 @@ const Community: NextPage = ({ initialInput, ...props }: T) => {
 											) : (
 												<Stack className={'no-data'}>
 													<img src="/img/icons/icoAlert.svg" alt="" />
-													<p>No Article found!</p>
+													<p>{t('No Article found!')}</p>
 												</Stack>
 											)}
 										</Stack>
@@ -239,7 +241,7 @@ const Community: NextPage = ({ initialInput, ...props }: T) => {
 											) : (
 												<Stack className={'no-data'}>
 													<img src="/img/icons/icoAlert.svg" alt="" />
-													<p>No Article found!</p>
+													<p>{t('No Article found!')}</p>
 												</Stack>
 											)}
 										</Stack>
@@ -262,7 +264,7 @@ const Community: NextPage = ({ initialInput, ...props }: T) => {
 							</Stack>
 							<Stack className="total-result">
 								<Typography>
-									Total {totalCount} article{totalCount > 1 ? 's' : ''} available
+									{t('Total {{count}} articles available', { count: totalCount })}
 								</Typography>
 							</Stack>
 						</Stack>

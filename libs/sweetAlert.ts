@@ -1,11 +1,18 @@
 import Swal from 'sweetalert2';
 import 'animate.css';
 import { Messages } from './config';
+import { i18n } from 'next-i18next';
+
+// Alert texts are English keys; translate them with the active language (falls back to the text itself).
+const tr = (msg?: string): string => {
+	const text = (msg ?? '').replace('Definer: ', '');
+	return i18n?.t(text, { ns: 'common' }) ?? text;
+};
 
 export const sweetErrorHandling = async (err: any) => {
 	await Swal.fire({
 		icon: 'error',
-		text: err.message,
+		text: tr(err.message),
 		showConfirmButton: false,
 	});
 };
@@ -14,7 +21,7 @@ export const sweetTopSuccessAlert = async (msg: string, duration: number = 2000)
 	await Swal.fire({
 		position: 'center',
 		icon: 'success',
-		title: msg.replace('Definer: ', ''),
+		title: tr(msg),
 		showConfirmButton: false,
 		timer: duration,
 	});
@@ -22,7 +29,7 @@ export const sweetTopSuccessAlert = async (msg: string, duration: number = 2000)
 
 export const sweetContactAlert = async (msg: string, duration: number = 10000) => {
 	await Swal.fire({
-		title: msg,
+		title: tr(msg),
 		showClass: {
 			popup: 'animate__bounceIn',
 		},
@@ -35,7 +42,7 @@ export const sweetConfirmAlert = (msg: string) => {
 	return new Promise(async (resolve, reject) => {
 		await Swal.fire({
 			icon: 'question',
-			text: msg,
+			text: tr(msg),
 			showClass: {
 				popup: 'animate__bounceIn',
 			},
@@ -43,6 +50,8 @@ export const sweetConfirmAlert = (msg: string) => {
 			showConfirmButton: true,
 			confirmButtonColor: '#e92C28',
 			cancelButtonColor: '#bdbdbd',
+			confirmButtonText: tr('OK'),
+			cancelButtonText: tr('Cancel'),
 		}).then((response) => {
 			if (response?.isConfirmed) resolve(true);
 			else resolve(false);
@@ -53,13 +62,14 @@ export const sweetConfirmAlert = (msg: string) => {
 export const sweetLoginConfirmAlert = (msg: string) => {
 	return new Promise(async (resolve, reject) => {
 		await Swal.fire({
-			text: msg,
+			text: tr(msg),
 			showCancelButton: true,
 			showConfirmButton: true,
 			color: '#212121',
 			confirmButtonColor: '#e92C28',
 			cancelButtonColor: '#bdbdbd',
-			confirmButtonText: 'Login',
+			confirmButtonText: tr('Login'),
+			cancelButtonText: tr('Cancel'),
 		}).then((response) => {
 			if (response?.isConfirmed) resolve(true);
 			else resolve(false);
@@ -70,7 +80,7 @@ export const sweetLoginConfirmAlert = (msg: string) => {
 export const sweetErrorAlert = async (msg: string, duration: number = 3000) => {
 	await Swal.fire({
 		icon: 'error',
-		title: msg,
+		title: tr(msg),
 		showConfirmButton: false,
 		timer: duration,
 	});
@@ -79,7 +89,7 @@ export const sweetErrorAlert = async (msg: string, duration: number = 3000) => {
 export const sweetMixinErrorAlert = async (msg: string, duration: number = 3000) => {
 	await Swal.fire({
 		icon: 'error',
-		title: msg,
+		title: tr(msg),
 		showConfirmButton: false,
 		timer: duration,
 	});
@@ -88,21 +98,21 @@ export const sweetMixinErrorAlert = async (msg: string, duration: number = 3000)
 export const sweetMixinSuccessAlert = async (msg: string, duration: number = 2000) => {
 	await Swal.fire({
 		icon: 'success',
-		title: msg,
+		title: tr(msg),
 		showConfirmButton: false,
 		timer: duration,
 	});
 };
 
 export const sweetBasicAlert = async (text: string) => {
-	Swal.fire(text);
+	Swal.fire(tr(text));
 };
 
 export const sweetErrorHandlingForAdmin = async (err: any) => {
 	const errorMessage = err.message ?? Messages.error1;
 	await Swal.fire({
 		icon: 'error',
-		text: errorMessage,
+		text: tr(errorMessage),
 		showConfirmButton: false,
 	});
 };
@@ -122,7 +132,7 @@ export const sweetTopSmallSuccessAlert = async (
 
 	Toast.fire({
 		icon: 'success',
-		title: msg,
+		title: tr(msg),
 	}).then((data) => {
 		if (enable_forward) {
 			window.location.reload();

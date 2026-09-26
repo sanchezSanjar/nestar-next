@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'next-i18next';
 import { NextPage } from 'next';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
 import { Pagination, Stack, Typography } from '@mui/material';
@@ -13,6 +14,7 @@ import { Messages } from '../../config';
 
 const MyFavorites: NextPage = () => {
 	const device = useDeviceDetect();
+	const { t } = useTranslation('common');
 	const [myFavorites, setMyFavorites] = useState<Property[]>([]);
 	const [total, setTotal] = useState<number>(0);
 	const [searchFavorites, setSearchFavorites] = useState<T>({ page: 1, limit: 6 });
@@ -68,19 +70,19 @@ const MyFavorites: NextPage = () => {
 			<div id="my-favorites-page">
 				<Stack className="main-title-box">
 					<Stack className="right-box">
-						<Typography className="main-title">My Favorites</Typography>
-						<Typography className="sub-title">We are glad to see you again!</Typography>
+						<Typography className="main-title">{t('My Favorites')}</Typography>
+						<Typography className="sub-title">{t('We are glad to see you again!')}</Typography>
 					</Stack>
 				</Stack>
 				<Stack className="favorites-list-box">
 					{myFavorites?.length ? (
 						myFavorites?.map((property: Property) => {
-							return <PropertyCard property={property} myFavorites={true} likePropertyHandler={likePropertyHandler} />;
+							return <PropertyCard property={property} myFavorites={true} likePropertyHandler={likePropertyHandler} key={property?._id} />;
 						})
 					) : (
 						<div className={'no-data'}>
 							<img src="/img/icons/icoAlert.svg" alt="" />
-							<p>No Favorites found!</p>
+							<p>{t('No Favorites found!')}</p>
 						</div>
 					)}
 				</Stack>
@@ -97,7 +99,7 @@ const MyFavorites: NextPage = () => {
 						</Stack>
 						<Stack className="total-result">
 							<Typography>
-								Total {total} favorite propert{total > 1 ? 'ies' : 'y'}
+								{t('Total {{count}} favorite properties', { count: total })}
 							</Typography>
 						</Stack>
 					</Stack>

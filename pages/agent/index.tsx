@@ -1,4 +1,5 @@
 import React, { ChangeEvent, MouseEvent, useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'next-i18next';
 import { NextPage } from 'next';
 import useDeviceDetect from '../../libs/hooks/useDeviceDetect';
 import withLayoutBasic from '../../libs/components/layout/LayoutBasic';
@@ -33,6 +34,7 @@ const parseInput = (input: unknown) => {
 
 const AgentList: NextPage = ({ initialInput, ...props }: any) => {
 	const device = useDeviceDetect();
+	const { t } = useTranslation('common');
 	const router = useRouter();
 	const [anchorEl2, setAnchorEl2] = useState<null | HTMLElement>(null);
 	const [filterSortName, setFilterSortName] = useState('Recent');
@@ -173,7 +175,7 @@ const AgentList: NextPage = ({ initialInput, ...props }: any) => {
 						<Box component={'div'} className={'left'}>
 							<input
 								type="text"
-								placeholder={'Search for an agent'}
+								placeholder={t('Search for an agent')}
 								value={searchText}
 								onChange={(e: any) => setSearchText(e.target.value)}
 								onKeyDown={(event: any) => {
@@ -193,23 +195,23 @@ const AgentList: NextPage = ({ initialInput, ...props }: any) => {
 							/>
 						</Box>
 						<Box component={'div'} className={'right'}>
-							<span>Sort by</span>
+							<span>{t('Sort by')}</span>
 							<div>
 								<Button onClick={sortingClickHandler} endIcon={<KeyboardArrowDownRoundedIcon />}>
-									{filterSortName}
+									{t(filterSortName)}
 								</Button>
 								<Menu anchorEl={anchorEl} open={sortingOpen} onClose={sortingCloseHandler} sx={{ paddingTop: '5px' }}>
 									<MenuItem onClick={sortingHandler} id={'recent'} disableRipple>
-										Recent
+										{t('Recent')}
 									</MenuItem>
 									<MenuItem onClick={sortingHandler} id={'old'} disableRipple>
-										Oldest
+										{t('Oldest')}
 									</MenuItem>
 									<MenuItem onClick={sortingHandler} id={'likes'} disableRipple>
-										Likes
+										{t('Likes')}
 									</MenuItem>
 									<MenuItem onClick={sortingHandler} id={'views'} disableRipple>
-										Views
+										{t('Views')}
 									</MenuItem>
 								</Menu>
 							</div>
@@ -219,7 +221,7 @@ const AgentList: NextPage = ({ initialInput, ...props }: any) => {
 						{agents?.length === 0 ? (
 							<div className={'no-data'}>
 								<img src="/img/icons/icoAlert.svg" alt="" />
-								<p>No Agents found!</p>
+								<p>{t('No Agents found!')}</p>
 							</div>
 						) : (
 							agents.map((agent: Member) => {
@@ -244,7 +246,7 @@ const AgentList: NextPage = ({ initialInput, ...props }: any) => {
 
 						{agents.length !== 0 && (
 							<span>
-								Total {total} agent{total > 1 ? 's' : ''} available
+								{t('Total {{count}} agents available', { count: total })}
 							</span>
 						)}
 					</Stack>

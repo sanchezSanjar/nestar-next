@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'next-i18next';
 import { Stack, Box, Divider, Typography } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
@@ -18,6 +19,7 @@ interface TopPropertyCardProps {
 const TopPropertyCard = (props: TopPropertyCardProps) => {
 	const { property, likePropertyHandler } = props;
 	const device = useDeviceDetect();
+	const { t } = useTranslation('common');
 	const router = useRouter();
 	const user = useReactiveVar(userVar);
 
@@ -46,23 +48,23 @@ const TopPropertyCard = (props: TopPropertyCardProps) => {
 					<div className={'options'}>
 						<div>
 							<img src="/img/icons/bed.svg" alt="" />
-							<span>{property?.propertyBeds} bed</span>
+							<span>{t('{{count}} bed', { count: property?.propertyBeds })}</span>
 						</div>
 						<div>
 							<img src="/img/icons/room.svg" alt="" />
-							<span>{property?.propertyRooms} rooms</span>
+							<span>{t('{{count}} rooms', { count: property?.propertyRooms })}</span>
 						</div>
 						<div>
 							<img src="/img/icons/expand.svg" alt="" />
-							<span>{property?.propertySquare} m2</span>
+							<span>{t('{{count}} m2', { count: property?.propertySquare })}</span>
 						</div>
 					</div>
 					<Divider sx={{ mt: '15px', mb: '17px' }} />
 					<div className={'bott'}>
 						<p>
 							{' '}
-							{property.propertyRent ? 'Rent' : ''} {property.propertyRent && property.propertyBarter && '/'}{' '}
-							{property.propertyBarter ? 'Barter' : ''}
+							{property.propertyRent ? t('Rent') : ''} {property.propertyRent && property.propertyBarter && '/'}{' '}
+							{property.propertyBarter ? t('Barter') : ''}
 						</p>
 						<div className="view-like-box">
 							<IconButton color={'default'}>
@@ -101,23 +103,23 @@ const TopPropertyCard = (props: TopPropertyCardProps) => {
 					<div className={'options'}>
 						<div>
 							<img src="/img/icons/bed.svg" alt="" />
-							<span>{property?.propertyBeds} bed</span>
+							<span>{t('{{count}} bed', { count: property?.propertyBeds })}</span>
 						</div>
 						<div>
 							<img src="/img/icons/room.svg" alt="" />
-							<span>{property?.propertyRooms} rooms</span>
+							<span>{t('{{count}} rooms', { count: property?.propertyRooms })}</span>
 						</div>
 						<div>
 							<img src="/img/icons/expand.svg" alt="" />
-							<span>{property?.propertySquare} m2</span>
+							<span>{t('{{count}} m2', { count: property?.propertySquare })}</span>
 						</div>
 					</div>
 					<Divider sx={{ mt: '15px', mb: '17px' }} />
 					<div className={'bott'}>
 						<p>
 							{' '}
-							{property.propertyRent ? 'Rent' : ''} {property.propertyRent && property.propertyBarter && '/'}{' '}
-							{property.propertyBarter ? 'Barter' : ''}
+							{property.propertyRent ? t('Rent') : ''} {property.propertyRent && property.propertyBarter && '/'}{' '}
+							{property.propertyBarter ? t('Barter') : ''}
 						</p>
 						<div className="view-like-box">
 							<IconButton color={'default'}>

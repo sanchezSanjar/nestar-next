@@ -2,7 +2,6 @@ import decodeJWT from 'jwt-decode';
 import { initializeApollo } from '../../apollo/client';
 import { userVar } from '../../apollo/store';
 import { CustomJwtPayload } from '../types/customJwtPayload';
-import { sweetMixinErrorAlert } from '../sweetAlert';
 import { LOGIN, SIGN_UP } from '../../apollo/user/mutation';
 
 export function getJwtToken(): any {
@@ -23,10 +22,11 @@ export const logIn = async (nick: string, password: string): Promise<void> => {
 			updateStorage({ jwtToken });
 			updateUserInfo(jwtToken);
 		}
-	} catch (err) {
+	} catch (err: any) {
 		console.warn('login err', err);
-		logOut();
-		throw new Error('Login Err');
+		deleteStorage();
+		deleteUserInfo();
+		throw new Error(err?.message ?? 'Login Err');
 	}
 };
 
@@ -52,15 +52,15 @@ const requestJwtToken = async ({
 		return { jwtToken: accessToken };
 	} catch (err: any) {
 		console.log('request token err', err.graphQLErrors);
-		switch (err.graphQLErrors[0].message) {
+		const message = err?.graphQLErrors?.[0]?.message;
+		switch (message) {
 			case 'Definer: login and password do not match':
-				await sweetMixinErrorAlert('Please check your password again');
-				break;
+				throw new Error('Please check your password again');
 			case 'Definer: user has been blocked!':
-				await sweetMixinErrorAlert('User has been blocked!');
-				break;
+				throw new Error('User has been blocked!');
+			default:
+				throw new Error(message ?? err?.message ?? 'Something went wrong');
 		}
-		throw new Error('token error');
 	}
 };
 
@@ -72,10 +72,11 @@ export const signUp = async (nick: string, password: string, phone: string, type
 			updateStorage({ jwtToken });
 			updateUserInfo(jwtToken);
 		}
-	} catch (err) {
+	} catch (err: any) {
 		console.warn('login err', err);
-		logOut();
-		throw new Error('Login Err');
+		deleteStorage();
+		deleteUserInfo();
+		throw new Error(err?.message ?? 'Login Err');
 	}
 };
 
@@ -107,15 +108,15 @@ const requestSignUpJwtToken = async ({
 		return { jwtToken: accessToken };
 	} catch (err: any) {
 		console.log('request token err', err.graphQLErrors);
-		switch (err.graphQLErrors[0].message) {
+		const message = err?.graphQLErrors?.[0]?.message;
+		switch (message) {
 			case 'Definer: login and password do not match':
-				await sweetMixinErrorAlert('Please check your password again');
-				break;
+				throw new Error('Please check your password again');
 			case 'Definer: user has been blocked!':
-				await sweetMixinErrorAlert('User has been blocked!');
-				break;
+				throw new Error('User has been blocked!');
+			default:
+				throw new Error(message ?? err?.message ?? 'Something went wrong');
 		}
-		throw new Error('token error');
 	}
 };
 

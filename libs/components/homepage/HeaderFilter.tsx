@@ -34,6 +34,12 @@ const MenuProps = {
 
 const thisYear = new Date().getFullYear();
 
+// the API's periodsRange takes dates, so a plain year number would be read as milliseconds since 1970
+const yearsToPeriod = (startYear: number, endYear: number) => ({
+	start: new Date(startYear, 0, 1),
+	end: new Date(endYear, 11, 31, 23, 59, 59),
+});
+
 interface HeaderFilterProps {
 	initialInput: PropertiesInquiry;
 }
@@ -260,7 +266,7 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 			...searchFilter,
 			search: {
 				...searchFilter.search,
-				periodsRange: { start: Number(event.target.value), end: yearCheck.end },
+				periodsRange: yearsToPeriod(Number(event.target.value), yearCheck.end),
 			},
 		});
 	};
@@ -272,7 +278,7 @@ const HeaderFilter = (props: HeaderFilterProps) => {
 			...searchFilter,
 			search: {
 				...searchFilter.search,
-				periodsRange: { start: yearCheck.start, end: Number(event.target.value) },
+				periodsRange: yearsToPeriod(yearCheck.start, Number(event.target.value)),
 			},
 		});
 	};

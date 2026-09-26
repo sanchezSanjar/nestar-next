@@ -31,7 +31,6 @@ const Community: NextPage = ({ initialInput, ...props }: T) => {
 	const [searchCommunity, setSearchCommunity] = useState<BoardArticlesInquiry>(initialInput);
 	const [boardArticles, setBoardArticles] = useState<BoardArticle[]>([]);
 	const [totalCount, setTotalCount] = useState<number>(0);
-	if (articleCategory) initialInput.search.articleCategory = articleCategory;
 
 	/** APOLLO REQUESTS **/
 	const [likeTargetBoardArticle] = useMutation(LIKE_TARGET_BOARD_ARTICLE);
@@ -49,13 +48,14 @@ const Community: NextPage = ({ initialInput, ...props }: T) => {
 		notifyOnNetworkStatusChange: true,
 		onCompleted: (data) => {
 			setBoardArticles(data?.getBoardArticles?.list);
-			setTotalCount(data?.getBoardArticles?.metaCounter[0]?.total);
+			setTotalCount(data?.getBoardArticles?.metaCounter?.[0]?.total ?? 0);
 		},
 	});
 
 	/** LIFECYCLES **/
 	useEffect(() => {
-		if (!query?.articleCategory)
+		if (!router.isReady) return;
+		if (!articleCategory) {
 			router.push(
 				{
 					pathname: router.pathname,
@@ -64,7 +64,14 @@ const Community: NextPage = ({ initialInput, ...props }: T) => {
 				router.pathname,
 				{ shallow: true },
 			);
-	}, []);
+		} else if (articleCategory !== searchCommunity.search.articleCategory) {
+			setSearchCommunity({
+				...searchCommunity,
+				page: 1,
+				search: { articleCategory: articleCategory as BoardArticleCategory },
+			});
+		}
+	}, [router.isReady, articleCategory]);
 
 	/** HANDLERS **/
 	const tabChangeHandler = async (e: T, value: string) => {

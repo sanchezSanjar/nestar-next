@@ -159,6 +159,7 @@
 }
 .agent-general-card {
 	position: relative;
+	width: 233px;
 	margin-right: 27px;
 	margin-bottom: 34px;
 	display: flex;
@@ -194,7 +195,12 @@
 		.agent-info {
 			display: flex;
 			flex-direction: column;
+			min-width: 0;
 			strong {
+				display: block;
+				overflow: hidden;
+				white-space: nowrap;
+				text-overflow: ellipsis;
 				color: #181a20;
 				font-family: $font;
 				font-size: 15px;
@@ -214,6 +220,7 @@
 		}
 		.buttons {
 			width: auto;
+			flex-shrink: 0;
 			display: flex;
 			flex-direction: row;
 			justify-content: center;

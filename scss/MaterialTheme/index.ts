@@ -164,6 +164,17 @@ export const light = {
 				},
 			},
 		},
+		// Opening a menu normally hides the page scrollbar and pads <body>, which shifts the fixed header sideways.
+		MuiMenu: {
+			defaultProps: {
+				disableScrollLock: true,
+			},
+		},
+		MuiPopover: {
+			defaultProps: {
+				disableScrollLock: true,
+			},
+		},
 		MuiSelect: {
 			styleOverrides: {
 				root: {},

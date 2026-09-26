@@ -43,12 +43,16 @@ function createIsomorphicLink() {
 		// @ts-ignore
 		const link = new createUploadLink({
 			uri: process.env.REACT_APP_API_GRAPHQL_URL,
+			// Apollo Server CSRF prevention blocks multipart uploads without this header
+			headers: { 'apollo-require-preflight': 'true' },
 		});
 
 		/* WEBSOCKET SUBSCRIPTION LINK */
 		const wsLink = new WebSocketLink({
 			uri: process.env.REACT_APP_API_WS ?? 'ws://127.0.0.1:3007',
 			options: {
+				// the API has no GraphQL subscriptions yet: connect only if one is actually used
+				lazy: true,
 				reconnect: false,
 				timeout: 30000,
 				connectionParams: () => {

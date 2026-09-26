@@ -97,7 +97,7 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 				},
 			},
 		},
-		skip: !propertyId && !property,
+		skip: !property?.propertyLocation,
 		notifyOnNetworkStatusChange: true,
 		onCompleted: (data: T) => {
 			if (data?.getProperties?.list) setDestinationProperties(data?.getProperties?.list);
@@ -136,12 +136,6 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 		}
 	}, [router]);
 
-	useEffect(() => {
-		if (commentInquiry.search.commentRefId) {
-			getCommentsRefetch({ input: commentInquiry });
-		}
-	}, [commentInquiry]);
-
 	/** HANDLERS **/
 	const changeImageHandler = (image: string) => {
 		setSlideImage(image);
@@ -157,7 +151,7 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 				variables: { input: id },
 			});
 			// execute refetch for chosen property(buyuk resmin sag ustu)
-			await getPropertyRefetch({ input: id });
+			await getPropertyRefetch({ input: propertyId });
 			// execute getPropertiesRefetch
 			await getPropertiesRefetch({
 				input: {
@@ -179,8 +173,7 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 	};
 
 	const commentPaginationChangeHandler = async (event: ChangeEvent<unknown>, value: number) => {
-		commentInquiry.page = value;
-		setCommentInquiry({ ...commentInquiry });
+		setCommentInquiry({ ...commentInquiry, page: value });
 	};
 	const createCommentHandler = async () => {
 		try {
@@ -195,7 +188,7 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 		}
 	};
 
-	if (getPropertyLoading) {
+	if (getPropertyLoading && !property) {
 		return (
 			<Stack sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', height: '1080px' }}>
 				<CircularProgress size={'4rem'} />
@@ -358,7 +351,7 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 										</Stack>
 										<Stack className={'option-includes'}>
 											<Typography className={'title'}>Year Build</Typography>
-											<Typography className={'option-data'}>{moment(property?.createdAt).format('YYYY')}</Typography>
+											<Typography className={'option-data'}>{property?.constructedAt ? moment(property.constructedAt).format('YYYY') : '-'}</Typography>
 										</Stack>
 									</Stack>
 									<Stack className={'option'}>
@@ -434,7 +427,7 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 											<Stack className={'right'}>
 												<Box component={'div'} className={'info'}>
 													<Typography className={'title'}>Year Built</Typography>
-													<Typography className={'data'}>{moment(property?.createdAt).format('YYYY')}</Typography>
+													<Typography className={'data'}>{property?.constructedAt ? moment(property.constructedAt).format('YYYY') : '-'}</Typography>
 												</Box>
 												<Box component={'div'} className={'info'}>
 													<Typography className={'title'}>Property Type</Typography>

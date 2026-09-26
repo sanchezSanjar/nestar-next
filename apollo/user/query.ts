@@ -44,7 +44,7 @@ export const GET_AGENTS = gql`
 
 export const GET_MEMBER = gql(`
 query GetMember($input: String!) {
-    getMember(memberId: $input) {
+    getMember(targetId: $input) {
         _id
         memberType
         memberStatus

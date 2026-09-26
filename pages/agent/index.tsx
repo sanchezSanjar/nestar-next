@@ -22,6 +22,15 @@ export const getStaticProps = async ({ locale }: any) => ({
 	},
 });
 
+const parseInput = (input: unknown) => {
+	if (typeof input !== 'string') return null;
+	try {
+		return JSON.parse(input);
+	} catch {
+		return null;
+	}
+};
+
 const AgentList: NextPage = ({ initialInput, ...props }: any) => {
 	const device = useDeviceDetect();
 	const router = useRouter();
@@ -29,9 +38,7 @@ const AgentList: NextPage = ({ initialInput, ...props }: any) => {
 	const [filterSortName, setFilterSortName] = useState('Recent');
 	const [sortingOpen, setSortingOpen] = useState(false);
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-	const [searchFilter, setSearchFilter] = useState<any>(
-		router?.query?.input ? JSON.parse(router?.query?.input as string) : initialInput,
-	);
+	const [searchFilter, setSearchFilter] = useState<any>(parseInput(router?.query?.input) ?? initialInput);
 	const [agents, setAgents] = useState<Member[]>([]);
 	const [total, setTotal] = useState<number>(0);
 	const [currentPage, setCurrentPage] = useState<number>(1);
@@ -46,19 +53,20 @@ const AgentList: NextPage = ({ initialInput, ...props }: any) => {
 		notifyOnNetworkStatusChange: true,
 		onCompleted: (data: T) => {
 			setAgents(data?.getAgents?.list);
-			setTotal(data?.getAgents?.metaCounter[0]?.total);
+			setTotal(data?.getAgents?.metaCounter?.[0]?.total ?? 0);
 		},
 	});
 
 	/** LIFECYCLES **/
 	useEffect(() => {
-		if (router.query.input) {
-			const input_obj = JSON.parse(router?.query?.input as string);
+		const input_obj = parseInput(router.query.input);
+		if (input_obj) {
 			setSearchFilter(input_obj);
-		} else
+			setCurrentPage(input_obj.page ?? 1);
+		} else {
 			router.replace(`/agent?input=${JSON.stringify(searchFilter)}`, `/agent?input=${JSON.stringify(searchFilter)}`);
-
-		setCurrentPage(searchFilter.page === undefined ? 1 : searchFilter.page);
+			setCurrentPage(searchFilter.page ?? 1);
+		}
 	}, [router]);
 
 	/** HANDLERS **/
@@ -70,7 +78,7 @@ const AgentList: NextPage = ({ initialInput, ...props }: any) => {
 			//likeTargetMember()
 			await likeTargetMember({ variables: { input: id } });
 			//getAgentsRefetch
-			await getAgentsRefetch({ input: initialInput });
+			await getAgentsRefetch({ input: searchFilter });
 
 			await sweetTopSmallSuccessAlert("success", 800);
 		} catch (err: any) {
@@ -148,8 +156,8 @@ const AgentList: NextPage = ({ initialInput, ...props }: any) => {
 	);
 	
 	const paginationChangeHandler = async (event: ChangeEvent<unknown>, value: number) => {
-		searchFilter.page = value;
-		await router.push(`/agent?input=${JSON.stringify(searchFilter)}`, `/agent?input=${JSON.stringify(searchFilter)}`, {
+		const updatedFilter = { ...searchFilter, page: value };
+		await router.push(`/agent?input=${JSON.stringify(updatedFilter)}`, `/agent?input=${JSON.stringify(updatedFilter)}`, {
 			scroll: false,
 		});
 		setCurrentPage(value);
@@ -170,10 +178,16 @@ const AgentList: NextPage = ({ initialInput, ...props }: any) => {
 								onChange={(e: any) => setSearchText(e.target.value)}
 								onKeyDown={(event: any) => {
 									if (event.key == 'Enter') {
-										setSearchFilter({
+										const updatedFilter = {
 											...searchFilter,
+											page: 1,
 											search: { ...searchFilter.search, text: searchText },
-										});
+										};
+										router.push(
+											`/agent?input=${JSON.stringify(updatedFilter)}`,
+											`/agent?input=${JSON.stringify(updatedFilter)}`,
+											{ scroll: false },
+										);
 									}
 								}}
 							/>

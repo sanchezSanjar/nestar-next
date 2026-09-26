@@ -23,12 +23,19 @@ export const getStaticProps = async ({ locale }: any) => ({
 	},
 });
 
+const parseInput = (input: unknown) => {
+	if (typeof input !== 'string') return null;
+	try {
+		return JSON.parse(input);
+	} catch {
+		return null;
+	}
+};
+
 const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 	const device = useDeviceDetect();
 	const router = useRouter();
-	const [searchFilter, setSearchFilter] = useState<PropertiesInquiry>(
-		router?.query?.input ? JSON.parse(router?.query?.input as string) : initialInput,
-	);
+	const [searchFilter, setSearchFilter] = useState<PropertiesInquiry>(parseInput(router?.query?.input) ?? initialInput);
 	const [properties, setProperties] = useState<Property[]>([]);
 	const [total, setTotal] = useState<number>(0);
 	const [currentPage, setCurrentPage] = useState<number>(1);
@@ -48,23 +55,20 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 			notifyOnNetworkStatusChange: true,
 			onCompleted: (data: T) => {
 				setProperties(data?.getProperties?.list);
-				setTotal(data?.getProperties?.metaCounter[0]?.total);
+				setTotal(data?.getProperties?.metaCounter?.[0]?.total ?? 0);
 			},
 		}) ;
 
 	/** LIFECYCLES **/
 	useEffect(() => {
-		if (router.query.input) {
-			const inputObj = JSON.parse(router?.query?.input as string);
+		const inputObj = parseInput(router.query.input);
+		if (inputObj) {
 			setSearchFilter(inputObj);
+			setCurrentPage(inputObj.page ?? 1);
+		} else {
+			setCurrentPage(searchFilter.page ?? 1);
 		}
-
-		setCurrentPage(searchFilter.page === undefined ? 1 : searchFilter.page);
 	}, [router]);
-
-	useEffect(() => {
-		console.log("searchFilter:", searchFilter);
-	}, [searchFilter]);
 
 	/** HANDLERS **/
 	const likePropertyHandler = async (user: T, id: string) => {
@@ -75,7 +79,7 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 			//likeTargetProperty()
 			await likeTargetProperty({ variables: { input: id } });
 			//getPropertiesRefetch
-			await getPropertiesRefetch({ input: initialInput });
+			await getPropertiesRefetch({ input: searchFilter });
 
 			await sweetTopSmallSuccessAlert("success", 800);
 		} catch (err: any) {
@@ -86,10 +90,10 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 
 
 	const handlePaginationChange = async (event: ChangeEvent<unknown>, value: number) => {
-		searchFilter.page = value;
+		const updatedFilter = { ...searchFilter, page: value };
 		await router.push(
-			`/property?input=${JSON.stringify(searchFilter)}`,
-			`/property?input=${JSON.stringify(searchFilter)}`,
+			`/property?input=${JSON.stringify(updatedFilter)}`,
+			`/property?input=${JSON.stringify(updatedFilter)}`,
 			{
 				scroll: false,
 			},
@@ -110,7 +114,7 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 	const sortingHandler = (e: React.MouseEvent<HTMLLIElement>) => {
 		switch (e.currentTarget.id) {
 			case 'new':
-				setSearchFilter({ ...searchFilter, sort: 'createdAt', direction: Direction.ASC });
+				setSearchFilter({ ...searchFilter, sort: 'createdAt', direction: Direction.DESC });
 				setFilterSortName('New');
 				break;
 			case 'lowest':

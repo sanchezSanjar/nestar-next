@@ -77,6 +77,7 @@ const CommunityDetail: NextPage = ({ initialInput, ...props }: T) => {
 		variables: {
 			input: articleId,
 		},
+		skip: !articleId,
 		notifyOnNetworkStatusChange: true,
 		onCompleted: (data: any) => {
 			setBoardArticle(data?.getBoardArticle);
@@ -96,7 +97,7 @@ const CommunityDetail: NextPage = ({ initialInput, ...props }: T) => {
 		variables: {
 			input: searchFilter,
 		},
-		// skip: !articleId,
+		skip: !searchFilter?.search?.commentRefId,
 		notifyOnNetworkStatusChange: true,
 		onCompleted: (data: any) => {
 			setComments(data?.getComments?.list);
@@ -165,6 +166,7 @@ const CommunityDetail: NextPage = ({ initialInput, ...props }: T) => {
 			await getCommentsRefetch({ input: searchFilter });
 			await boardArticleRefetch({ input: articleId });
 			setComment('');
+			setWordsCnt(0);
 			await sweetMixinSuccessAlert('Successfully commented!');
 		} catch (error: any) {
 			await sweetMixinErrorAlert(error.message);
@@ -205,6 +207,8 @@ const CommunityDetail: NextPage = ({ initialInput, ...props }: T) => {
 			}
 
 			await getCommentsRefetch({ input: searchFilter });
+			// article comment counter changes when a comment is deleted
+			if (commentStatus) await boardArticleRefetch({ input: articleId });
 		} catch (error: any) {
 			await sweetMixinErrorAlert(error.message);
 		} finally {
@@ -324,14 +328,16 @@ const CommunityDetail: NextPage = ({ initialInput, ...props }: T) => {
 													{boardArticle?.memberData?.memberNick}
 												</Typography>
 												<Stack className="divider"></Stack>
-												<Moment className={'time-added'} format={'DD.MM.YY HH:mm'}>
-													{boardArticle?.createdAt}
-												</Moment>
+												{boardArticle?.createdAt && (
+													<Moment className={'time-added'} format={'DD.MM.YY HH:mm'}>
+														{boardArticle.createdAt}
+													</Moment>
+												)}
 											</Stack>
 										</Stack>
 										<Stack className="info">
 											<Stack className="icon-info">
-												{boardArticle?.meLiked ? (
+												{boardArticle?.meLiked?.[0]?.myFavorite ? (
 													<ThumbUpAltIcon onClick={() => likeBoArticleHandler(user, boardArticle?._id)} />
 												) : (
 													<ThumbUpOffAltIcon onClick={() => likeBoArticleHandler(user, boardArticle?._id)} />
@@ -361,12 +367,8 @@ const CommunityDetail: NextPage = ({ initialInput, ...props }: T) => {
 									</Stack>
 									<Stack className="like-and-dislike">
 										<Stack className="top">
-											<Button>
-												{boardArticle?.meLiked ? (
-													<ThumbUpAltIcon onClick={() => likeBoArticleHandler(user, boardArticle?._id)} />
-												) : (
-													<ThumbUpOffAltIcon onClick={() => likeBoArticleHandler(user, boardArticle?._id)} />
-												)}
+											<Button onClick={() => likeBoArticleHandler(user, boardArticle?._id)}>
+												{boardArticle?.meLiked?.[0]?.myFavorite ? <ThumbUpAltIcon /> : <ThumbUpOffAltIcon />}
 												<Typography className="text">{boardArticle?.articleLikes}</Typography>
 											</Button>
 										</Stack>
@@ -429,7 +431,7 @@ const CommunityDetail: NextPage = ({ initialInput, ...props }: T) => {
 																<DeleteForeverIcon sx={{ color: '#757575', cursor: 'pointer' }} />
 															</IconButton>
 															<IconButton
-																onClick={(e: MouseEvent) => {
+																onClick={() => {
 																	setUpdatedComment(commentData?.commentContent);
 																	setUpdatedCommentWordsCnt(commentData?.commentContent?.length);
 																	setUpdatedCommentId(commentData?._id);
@@ -438,72 +440,6 @@ const CommunityDetail: NextPage = ({ initialInput, ...props }: T) => {
 															>
 																<EditIcon sx={{ color: '#757575' }} />
 															</IconButton>
-															<Backdrop
-																sx={{
-																	top: '40%',
-																	right: '25%',
-																	left: '25%',
-																	width: '1000px',
-																	height: 'fit-content',
-																	borderRadius: '10px',
-																	color: '#ffffff',
-																	zIndex: 999,
-																}}
-																open={openBackdrop}
-															>
-																<Stack
-																	sx={{
-																		width: '100%',
-																		height: '100%',
-																		background: 'white',
-																		border: '1px solid #b9b9b9',
-																		padding: '15px',
-																		gap: '10px',
-																		borderRadius: '10px',
-																		boxShadow: 'rgba(99, 99, 99, 0.2) 0px 2px 8px 0px',
-																	}}
-																>
-																	<Typography variant="h4" color={'#b9b9b9'}>
-																		Update comment
-																	</Typography>
-																	<Stack gap={'20px'}>
-																		<input
-																			autoFocus
-																			value={updatedComment}
-																			onChange={(e) => updateCommentInputHandler(e.target.value)}
-																			type="text"
-																			style={{
-																				border: '1px solid #b9b9b9',
-																				outline: 'none',
-																				height: '40px',
-																				padding: '0px 10px',
-																				borderRadius: '5px',
-																			}}
-																		/>
-																		<Stack width={'100%'} flexDirection={'row'} justifyContent={'space-between'}>
-																			<Typography variant="subtitle1" color={'#b9b9b9'}>
-																				{updatedCommentWordsCnt}/100
-																			</Typography>
-																			<Stack sx={{ flexDirection: 'row', alignSelf: 'flex-end', gap: '10px' }}>
-																				<Button
-																					variant="outlined"
-																					color="inherit"
-																					onClick={() => cancelButtonHandler()}
-																				>
-																					Cancel
-																				</Button>
-																				<Button
-																					variant="contained"
-																					color="inherit"
-																					onClick={() => updateButtonHandler(updatedCommentId, undefined)}
-																				>
-																					Update
-																				</Button>
-																			</Stack>
-																		</Stack>
-																	</Stack>
-																</Stack>
-															</Backdrop>
 														</Stack>
 													)}
 												</Stack>
@@ -514,6 +450,72 @@ const CommunityDetail: NextPage = ({ initialInput, ...props }: T) => {
 										</Stack>
 									);
 								})}
+								<Backdrop
+									sx={{
+										top: '40%',
+										right: '25%',
+										left: '25%',
+										width: '1000px',
+										height: 'fit-content',
+										borderRadius: '10px',
+										color: '#ffffff',
+										zIndex: 999,
+									}}
+									open={openBackdrop}
+								>
+									<Stack
+										sx={{
+											width: '100%',
+											height: '100%',
+											background: 'white',
+											border: '1px solid #b9b9b9',
+											padding: '15px',
+											gap: '10px',
+											borderRadius: '10px',
+											boxShadow: 'rgba(99, 99, 99, 0.2) 0px 2px 8px 0px',
+										}}
+									>
+										<Typography variant="h4" color={'#b9b9b9'}>
+											Update comment
+										</Typography>
+										<Stack gap={'20px'}>
+											<input
+												autoFocus
+												value={updatedComment}
+												onChange={(e) => updateCommentInputHandler(e.target.value)}
+												type="text"
+												style={{
+													border: '1px solid #b9b9b9',
+													outline: 'none',
+													height: '40px',
+													padding: '0px 10px',
+													borderRadius: '5px',
+												}}
+											/>
+											<Stack width={'100%'} flexDirection={'row'} justifyContent={'space-between'}>
+												<Typography variant="subtitle1" color={'#b9b9b9'}>
+													{updatedCommentWordsCnt}/100
+												</Typography>
+												<Stack sx={{ flexDirection: 'row', alignSelf: 'flex-end', gap: '10px' }}>
+													<Button
+														variant="outlined"
+														color="inherit"
+														onClick={() => cancelButtonHandler()}
+													>
+														Cancel
+													</Button>
+													<Button
+														variant="contained"
+														color="inherit"
+														onClick={() => updateButtonHandler(updatedCommentId, undefined)}
+													>
+														Update
+													</Button>
+												</Stack>
+											</Stack>
+										</Stack>
+									</Stack>
+								</Backdrop>
 								{total > 0 && (
 									<Stack className="pagination-box">
 										<Pagination

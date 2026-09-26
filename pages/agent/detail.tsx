@@ -116,18 +116,6 @@ const AgentDetail: NextPage = ({ initialInput, initialComment, ...props }: any) 
 		if (router.query.agentId) setAgentId(router.query.agentId as string);
 	}, [router]);
 
-	useEffect(() => {
-		if (searchFilter.search?.memberId) {
-			getPropertiesRefetch({ variables: { input: searchFilter } }).then();
-		}
-	}, [searchFilter]);
-
-	useEffect(() => {
-		if (commentInquiry.search?.commentRefId) {
-			getCommentsRefetch({ variables: { input: commentInquiry } }).then();
-		}
-	}, [commentInquiry]);
-
 	/** HANDLERS **/
 	const redirectToMemberPageHandler = async (memberId: string) => {
 		try {
@@ -139,13 +127,11 @@ const AgentDetail: NextPage = ({ initialInput, initialComment, ...props }: any) 
 	};
 
 	const propertyPaginationChangeHandler = async (event: ChangeEvent<unknown>, value: number) => {
-		searchFilter.page = value;
-		setSearchFilter({ ...searchFilter });
+		setSearchFilter({ ...searchFilter, page: value });
 	};
 
 	const commentPaginationChangeHandler = async (event: ChangeEvent<unknown>, value: number) => {
-		commentInquiry.page = value;
-		setCommentInquiry({ ...commentInquiry });
+		setCommentInquiry({ ...commentInquiry, page: value });
 	};
 
 	const createCommentHandler = async () => {
@@ -209,7 +195,7 @@ const AgentDetail: NextPage = ({ initialInput, initialComment, ...props }: any) 
 							{agentProperties.map((property: Property) => {
 								return (
 									<div className={'wrap-main'} key={property?._id}>
-										<PropertyBigCard property={property} key={property?._id} />
+										<PropertyBigCard property={property} likePropertyHandler={likePropertyHandler} key={property?._id} />
 									</div>
 								);
 							})}
@@ -309,6 +295,8 @@ AgentDetail.defaultProps = {
 	initialInput: {
 		page: 1,
 		limit: 9,
+		sort: 'createdAt',
+		direction: 'DESC',
 		search: {
 			memberId: '',
 		},

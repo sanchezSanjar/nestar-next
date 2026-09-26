@@ -102,7 +102,7 @@ const PropertyCard = (props: PropertyCardType) => {
 									<RemoveRedEyeIcon />
 								</IconButton>
 								<Typography className="view-cnt">{property?.propertyViews}</Typography>
-								<IconButton color={'default'} onClick={() => likePropertyHandler(user, property?._id)}>
+								<IconButton color={'default'} onClick={() => likePropertyHandler?.(user, property?._id)}>
 									{myFavorites ? (
 										<FavoriteIcon color="primary" />
 									) : property?.meLiked && property?.meLiked[0]?.myFavorite ? (

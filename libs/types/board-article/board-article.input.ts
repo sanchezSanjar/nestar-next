@@ -12,6 +12,7 @@ export interface BoardArticleInput {
 interface BAISearch {
 	articleCategory: BoardArticleCategory;
 	text?: string;
+	memberId?: string;
 }
 
 export interface BoardArticlesInquiry {

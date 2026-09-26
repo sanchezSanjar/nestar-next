@@ -42,6 +42,10 @@ const Filter = (props: FilterType) => {
 	const [propertyType, setPropertyType] = useState<PropertyType[]>(Object.values(PropertyType));
 	const [searchText, setSearchText] = useState<string>('');
 	const [showMore, setShowMore] = useState<boolean>(false);
+	const [priceInput, setPriceInput] = useState({
+		start: String(searchFilter?.search?.pricesRange?.start ?? 0),
+		end: String(searchFilter?.search?.pricesRange?.end ?? 0),
+	});
 
 	/** LIFECYCLES **/
 	useEffect(() => {
@@ -50,11 +54,13 @@ const Filter = (props: FilterType) => {
 			setShowMore(false);
 			router.push(`/property?input=${JSON.stringify({
 			...searchFilter,
+			page: 1,
 			search: {
 				...searchFilter.search,
 			}, 
 		})}`, `/property?input=${JSON.stringify({
 			...searchFilter,
+			page: 1,
 			search: {
 				...searchFilter.search,
 			}, 
@@ -66,11 +72,13 @@ const Filter = (props: FilterType) => {
 			delete searchFilter.search.typeList;
 			router.push(`/property?input=${JSON.stringify({
 			...searchFilter,
+			page: 1,
 			search: {
 				...searchFilter.search,
 			}, 
 		})}`, `/property?input=${JSON.stringify({
 			...searchFilter,
+			page: 1,
 			search: {
 				...searchFilter.search,
 			}, 
@@ -82,11 +90,13 @@ const Filter = (props: FilterType) => {
 			delete searchFilter.search.roomsList;
 			router.push(`/property?input=${JSON.stringify({
 			...searchFilter,
+			page: 1,
 			search: {
 				...searchFilter.search,
 			}, 
 		})}`, `/property?input=${JSON.stringify({
 			...searchFilter,
+			page: 1,
 			search: {
 				...searchFilter.search,
 			}, 
@@ -98,11 +108,13 @@ const Filter = (props: FilterType) => {
 			delete searchFilter.search.options;
 			router.push(`/property?input=${JSON.stringify({
 			...searchFilter,
+			page: 1,
 			search: {
 				...searchFilter.search,
 			}, 
 		})}`, `/property?input=${JSON.stringify({
 			...searchFilter,
+			page: 1,
 			search: {
 				...searchFilter.search,
 			}, 
@@ -114,11 +126,13 @@ const Filter = (props: FilterType) => {
 			delete searchFilter.search.bedsList;
 			router.push(`/property?input=${JSON.stringify({
 			...searchFilter,
+			page: 1,
 			search: {
 				...searchFilter.search,
 			}, 
 		})}`, `/property?input=${JSON.stringify({
 			...searchFilter,
+			page: 1,
 			search: {
 				...searchFilter.search,
 			}, 
@@ -139,10 +153,12 @@ const Filter = (props: FilterType) => {
 					await router.push(
 						`/property?input=${JSON.stringify({
 							...searchFilter,
+							page: 1,
 							search: { ...searchFilter.search, locationList: [...(searchFilter?.search?.locationList || []), value] },
 						})}`,
 						`/property?input=${JSON.stringify({
 							...searchFilter,
+							page: 1,
 							search: { ...searchFilter.search, locationList: [...(searchFilter?.search?.locationList || []), value] },
 						})}`,
 						{ scroll: false },
@@ -151,6 +167,7 @@ const Filter = (props: FilterType) => {
 					await router.push(
 						`/property?input=${JSON.stringify({
 							...searchFilter,
+							page: 1,
 							search: {
 								...searchFilter.search,
 								locationList: searchFilter?.search?.locationList?.filter((item: string) => item !== value),
@@ -158,6 +175,7 @@ const Filter = (props: FilterType) => {
 						})}`,
 						`/property?input=${JSON.stringify({
 							...searchFilter,
+							page: 1,
 							search: {
 								...searchFilter.search,
 								locationList: searchFilter?.search?.locationList?.filter((item: string) => item !== value),
@@ -188,10 +206,12 @@ const Filter = (props: FilterType) => {
 					await router.push(
 						`/property?input=${JSON.stringify({
 							...searchFilter,
+							page: 1,
 							search: { ...searchFilter.search, typeList: [...(searchFilter?.search?.typeList || []), value] },
 						})}`,
 						`/property?input=${JSON.stringify({
 							...searchFilter,
+							page: 1,
 							search: { ...searchFilter.search, typeList: [...(searchFilter?.search?.typeList || []), value] },
 						})}`,
 						{ scroll: false },
@@ -200,6 +220,7 @@ const Filter = (props: FilterType) => {
 					await router.push(
 						`/property?input=${JSON.stringify({
 							...searchFilter,
+							page: 1,
 							search: {
 								...searchFilter.search,
 								typeList: searchFilter?.search?.typeList?.filter((item: string) => item !== value),
@@ -207,6 +228,7 @@ const Filter = (props: FilterType) => {
 						})}`,
 						`/property?input=${JSON.stringify({
 							...searchFilter,
+							page: 1,
 							search: {
 								...searchFilter.search,
 								typeList: searchFilter?.search?.typeList?.filter((item: string) => item !== value),
@@ -236,6 +258,7 @@ const Filter = (props: FilterType) => {
 						await router.push(
 							`/property?input=${JSON.stringify({
 								...searchFilter,
+								page: 1,
 								search: {
 									...searchFilter.search,
 									roomsList: searchFilter?.search?.roomsList?.filter((item: Number) => item !== number),
@@ -243,6 +266,7 @@ const Filter = (props: FilterType) => {
 							})}`,
 							`/property?input=${JSON.stringify({
 								...searchFilter,
+								page: 1,
 								search: {
 									...searchFilter.search,
 									roomsList: searchFilter?.search?.roomsList?.filter((item: Number) => item !== number),
@@ -254,10 +278,12 @@ const Filter = (props: FilterType) => {
 						await router.push(
 							`/property?input=${JSON.stringify({
 								...searchFilter,
+								page: 1,
 								search: { ...searchFilter.search, roomsList: [...(searchFilter?.search?.roomsList || []), number] },
 							})}`,
 							`/property?input=${JSON.stringify({
 								...searchFilter,
+								page: 1,
 								search: { ...searchFilter.search, roomsList: [...(searchFilter?.search?.roomsList || []), number] },
 							})}`,
 							{ scroll: false },
@@ -269,12 +295,14 @@ const Filter = (props: FilterType) => {
 					await router.push(
 						`/property?input=${JSON.stringify({
 							...searchFilter,
+							page: 1,
 							search: {
 								...searchFilter.search,
 							},
 						})}`,
 						`/property?input=${JSON.stringify({
 							...searchFilter,
+							page: 1,
 							search: {
 								...searchFilter.search,
 							},
@@ -300,10 +328,12 @@ const Filter = (props: FilterType) => {
 					await router.push(
 						`/property?input=${JSON.stringify({
 							...searchFilter,
+							page: 1,
 							search: { ...searchFilter.search, options: [...(searchFilter?.search?.options || []), value] },
 						})}`,
 						`/property?input=${JSON.stringify({
 							...searchFilter,
+							page: 1,
 							search: { ...searchFilter.search, options: [...(searchFilter?.search?.options || []), value] },
 						})}`,
 						{ scroll: false },
@@ -312,6 +342,7 @@ const Filter = (props: FilterType) => {
 					await router.push(
 						`/property?input=${JSON.stringify({
 							...searchFilter,
+							page: 1,
 							search: {
 								...searchFilter.search,
 								options: searchFilter?.search?.options?.filter((item: string) => item !== value),
@@ -319,6 +350,7 @@ const Filter = (props: FilterType) => {
 						})}`,
 						`/property?input=${JSON.stringify({
 							...searchFilter,
+							page: 1,
 							search: {
 								...searchFilter.search,
 								options: searchFilter?.search?.options?.filter((item: string) => item !== value),
@@ -344,6 +376,7 @@ const Filter = (props: FilterType) => {
 						await router.push(
 							`/property?input=${JSON.stringify({
 								...searchFilter,
+								page: 1,
 								search: {
 									...searchFilter.search,
 									bedsList: searchFilter?.search?.bedsList?.filter((item: Number) => item !== number),
@@ -351,6 +384,7 @@ const Filter = (props: FilterType) => {
 							})}`,
 							`/property?input=${JSON.stringify({
 								...searchFilter,
+								page: 1,
 								search: {
 									...searchFilter.search,
 									bedsList: searchFilter?.search?.bedsList?.filter((item: Number) => item !== number),
@@ -362,10 +396,12 @@ const Filter = (props: FilterType) => {
 						await router.push(
 							`/property?input=${JSON.stringify({
 								...searchFilter,
+								page: 1,
 								search: { ...searchFilter.search, bedsList: [...(searchFilter?.search?.bedsList || []), number] },
 							})}`,
 							`/property?input=${JSON.stringify({
 								...searchFilter,
+								page: 1,
 								search: { ...searchFilter.search, bedsList: [...(searchFilter?.search?.bedsList || []), number] },
 							})}`,
 							{ scroll: false },
@@ -377,12 +413,14 @@ const Filter = (props: FilterType) => {
 					await router.push(
 						`/property?input=${JSON.stringify({
 							...searchFilter,
+							page: 1,
 							search: {
 								...searchFilter.search,
 							},
 						})}`,
 						`/property?input=${JSON.stringify({
 							...searchFilter,
+							page: 1,
 							search: {
 								...searchFilter.search,
 							},
@@ -407,6 +445,7 @@ const Filter = (props: FilterType) => {
 				await router.push(
 					`/property?input=${JSON.stringify({
 						...searchFilter,
+						page: 1,
 						search: {
 							...searchFilter.search,
 							squaresRange: { ...searchFilter.search.squaresRange, start: value },
@@ -414,6 +453,7 @@ const Filter = (props: FilterType) => {
 					})}`,
 					`/property?input=${JSON.stringify({
 						...searchFilter,
+						page: 1,
 						search: {
 							...searchFilter.search,
 							squaresRange: { ...searchFilter.search.squaresRange, start: value },
@@ -425,6 +465,7 @@ const Filter = (props: FilterType) => {
 				await router.push(
 					`/property?input=${JSON.stringify({
 						...searchFilter,
+						page: 1,
 						search: {
 							...searchFilter.search,
 							squaresRange: { ...searchFilter.search.squaresRange, end: value },
@@ -432,6 +473,7 @@ const Filter = (props: FilterType) => {
 					})}`,
 					`/property?input=${JSON.stringify({
 						...searchFilter,
+						page: 1,
 						search: {
 							...searchFilter.search,
 							squaresRange: { ...searchFilter.search.squaresRange, end: value },
@@ -450,6 +492,7 @@ const Filter = (props: FilterType) => {
 				await router.push(
 					`/property?input=${JSON.stringify({
 						...searchFilter,
+						page: 1,
 						search: {
 							...searchFilter.search,
 							pricesRange: { ...searchFilter.search.pricesRange, start: value * 1 },
@@ -457,6 +500,7 @@ const Filter = (props: FilterType) => {
 					})}`,
 					`/property?input=${JSON.stringify({
 						...searchFilter,
+						page: 1,
 						search: {
 							...searchFilter.search,
 							pricesRange: { ...searchFilter.search.pricesRange, start: value * 1 },
@@ -468,6 +512,7 @@ const Filter = (props: FilterType) => {
 				await router.push(
 					`/property?input=${JSON.stringify({
 						...searchFilter,
+						page: 1,
 						search: {
 							...searchFilter.search,
 							pricesRange: { ...searchFilter.search.pricesRange, end: value * 1 },
@@ -475,6 +520,7 @@ const Filter = (props: FilterType) => {
 					})}`,
 					`/property?input=${JSON.stringify({
 						...searchFilter,
+						page: 1,
 						search: {
 							...searchFilter.search,
 							pricesRange: { ...searchFilter.search.pricesRange, end: value * 1 },
@@ -486,6 +532,27 @@ const Filter = (props: FilterType) => {
 		},
 		[searchFilter],
 	);
+
+	// keep the price boxes in sync when the filter changes from outside (reset, back/forward)
+	useEffect(() => {
+		setPriceInput({
+			start: String(searchFilter?.search?.pricesRange?.start ?? 0),
+			end: String(searchFilter?.search?.pricesRange?.end ?? 0),
+		});
+	}, [searchFilter?.search?.pricesRange?.start, searchFilter?.search?.pricesRange?.end]);
+
+	// apply typed prices after a pause, so every keystroke doesn't push a new URL and drop digits
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			const current = searchFilter?.search?.pricesRange;
+			if (priceInput.start !== '' && Number(priceInput.start) !== (current?.start ?? 0)) {
+				propertyPriceHandler(Number(priceInput.start), 'start');
+			} else if (priceInput.end !== '' && Number(priceInput.end) !== (current?.end ?? 0)) {
+				propertyPriceHandler(Number(priceInput.end), 'end');
+			}
+		}, 600);
+		return () => clearTimeout(timer);
+	}, [priceInput]);
 
 	const refreshHandler = async () => {
 		try {
@@ -516,9 +583,9 @@ const Filter = (props: FilterType) => {
 							onChange={(e: any) => setSearchText(e.target.value)}
 							onKeyDown={(event: any) => {
 								if (event.key == 'Enter') {
-									setSearchFilter({
-										...searchFilter,
-										search: { ...searchFilter.search, text: searchText },
+									const updatedFilter = { ...searchFilter, page: 1, search: { ...searchFilter.search, text: searchText } };
+									router.push(`/property?input=${JSON.stringify(updatedFilter)}`, `/property?input=${JSON.stringify(updatedFilter)}`, {
+										scroll: false,
 									});
 								}
 							}}
@@ -527,9 +594,10 @@ const Filter = (props: FilterType) => {
 									<CancelRoundedIcon
 										onClick={() => {
 											setSearchText('');
-											setSearchFilter({
-												...searchFilter,
-												search: { ...searchFilter.search, text: '' },
+											const { text, ...search } = searchFilter.search;
+											const updatedFilter = { ...searchFilter, page: 1, search };
+											router.push(`/property?input=${JSON.stringify(updatedFilter)}`, `/property?input=${JSON.stringify(updatedFilter)}`, {
+												scroll: false,
 											});
 										}}
 									/>
@@ -812,10 +880,10 @@ const Filter = (props: FilterType) => {
 							type="number"
 							placeholder="$ min"
 							min={0}
-							value={searchFilter?.search?.pricesRange?.start ?? 0}
+							value={priceInput.start}
 							onChange={(e: any) => {
-								if (e.target.value >= 0) {
-									propertyPriceHandler(e.target.value, 'start');
+								if (e.target.value === '' || e.target.value >= 0) {
+									setPriceInput({ ...priceInput, start: e.target.value });
 								}
 							}}
 						/>
@@ -823,10 +891,10 @@ const Filter = (props: FilterType) => {
 						<input
 							type="number"
 							placeholder="$ max"
-							value={searchFilter?.search?.pricesRange?.end ?? 0}
+							value={priceInput.end}
 							onChange={(e: any) => {
-								if (e.target.value >= 0) {
-									propertyPriceHandler(e.target.value, 'end');
+								if (e.target.value === '' || e.target.value >= 0) {
+									setPriceInput({ ...priceInput, end: e.target.value });
 								}
 							}}
 						/>
